@@ -10,7 +10,7 @@ class Database(GameObject):
         filesystem: Filesystem | Folder = None,
         gamepath: str = None,
         assets: str = '/assets',
-        baseassets: str = '/',
+        baseassets: str = '/'
     ) -> None:
         """Game database object, which contains an sqlite3 database.
 
@@ -22,11 +22,11 @@ class Database(GameObject):
             baseassets (str, optional): Base assets path within the assets folder, e.g. `/perry/` in wmp. Defaults to `/`
         """
         super().__init__(filesystem, gamepath, assets, baseassets)
-        
+
         this.connection = None
-        
+
         this.filename = 'water.db'
-        
+
         if isinstance(database, File):
             this.connection = database.read(mime = 'application/x-sqlite3')
             this.filename = database.path
@@ -38,7 +38,7 @@ class Database(GameObject):
             this.connection = file.read()
         else:
             this.connection(':memory:')
-    
+
     @property
     def connection(this) -> sqlite3.Connection:
         """The sqlite3 python database object.
@@ -53,13 +53,13 @@ class Database(GameObject):
             this._connection = None
             this.cursor = None
             return
-        
+
         if not isinstance(connection, sqlite3.Connection):
             raise TypeError('connection must be sqlite3.Connection')
-        
+
         this._connection = connection
         this.cursor = this._connection.cursor()
-        
+
     def export(this, filename : str = None) -> bytes:
         """Export the database into the filesystem.
 
@@ -73,14 +73,14 @@ class Database(GameObject):
             filename = this.filename
         else:
             this.filename = filename
-        
+
         file = this.filesystem.get(filename)
-        
+
         if file == None:
             file = File(None, 'water.db', b'')
-        
+
         data = file.write(this.connection)
-        
+
         return file.rawdata.getvalue()
 
     def execute(this, *args):

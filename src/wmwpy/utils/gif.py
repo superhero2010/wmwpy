@@ -12,7 +12,6 @@ from itertools import chain
 
 from PIL.Image import Image
 
-
 class TransparentAnimatedGifConverter(object):
     _PALETTE_SLOTSET = set(range(256))
 
@@ -55,8 +54,7 @@ class TransparentAnimatedGifConverter(object):
     def _remap_palette_idx_zero(self):
         """Since the first color is used in the palette, remap it."""
         free_slots = self._PALETTE_SLOTSET - self._img_p_used_palette_idxs
-        new_idx = free_slots.pop() if free_slots else \
-            self._get_similar_color_idx()
+        new_idx = free_slots.pop() if free_slots else self._get_similar_color_idx()
         self._img_p_used_palette_idxs.add(new_idx)
         self._palette_replaces['idx_from'].append(0)
         self._palette_replaces['idx_to'].append(new_idx)
@@ -110,7 +108,6 @@ class TransparentAnimatedGifConverter(object):
         self._img_p.info['background'] = 0
         return self._img_p
 
-
 def _create_animated_gif(images: List[Image], durations: Union[int, List[int]]) -> Tuple[Image, dict]:
     """If the image is a GIF, create an its thumbnail here."""
     save_kwargs = dict()
@@ -134,7 +131,6 @@ def _create_animated_gif(images: List[Image], durations: Union[int, List[int]]) 
         disposal=2,  # Other disposals don't work
         loop=0)
     return output_image, save_kwargs
-
 
 def save_transparent_gif(images: List[Image], durations: Union[int, List[int]], save_file) -> Image:
     """Creates a transparent GIF, adjusting to avoid transparency issues that are present in the PIL library

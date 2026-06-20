@@ -22,7 +22,7 @@ def load(
     db : str = None,
     profile : str = None,
     baseassets : str = None,
-    load_callback : typing.Callable[[int, str, int], typing.Any] = None,
+    load_callback : typing.Callable[[int, str, int], typing.Any] = None
 ) -> Game:
     """load game
 
@@ -36,28 +36,14 @@ def load(
         baseassets (str, optional): Base assets path within the assets folder, e.g. '/perry/' in wmp. Defaults to '/'.
         load_callback (Callable[[int, str, int], Any], optional): A callback function to be ran while loading the game. Defaults to `None`.
     """
-    
+
     game = game.upper()
     platform = platform.lower()
-    
-    platforms = {
-        'android': {
-            'assets': '/assets',
-        },
-        'ios': {
-            'assets': '/Content',
-        },
-    }
-    
+
+    platforms = {'android': {'assets': '/assets'}, 'ios': {'assets': '/Content'}}
+
     if assets == None:
         assets = platforms[platform]['assets']
-    
+
     # try:
-    return GAMES.get(game, Game)(
-        gamepath = gamepath,
-        assets = assets,
-        db = db,
-        profile = profile,
-        load_callback = load_callback,
-        baseassets = baseassets,
-    )
+    return GAMES.get(game, Game)(gamepath = gamepath, assets = assets, db = db, profile = profile, load_callback = load_callback, baseassets = baseassets)

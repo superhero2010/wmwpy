@@ -17,11 +17,11 @@ class Imagelist(GameObject):
     <ImageList imgSize="512 512" file="" textureBasePath="/Textures/">
     </ImageList>
     """
-    
+
     class Format():
         IMAGELIST = 0
         PAGES = 1
-    
+
     def __init__(
         this,
         file : str | bytes | File = None,
@@ -33,7 +33,7 @@ class Imagelist(GameObject):
         save_images : bool = False
     ) -> None:
         """Get imagelist from file
-        
+
         Args:
             file (str | bytes | File, optional): File to read. Defaults to None.
             filesystem (Filesystem | Folder, optional): Filesystem to use. Defaults to None.
@@ -43,16 +43,16 @@ class Imagelist(GameObject):
             HD (bool, optional): Use HD images. Defaults to False.
             TabHD (bool, optional): Use TabHD images. Defaults to False.
             save_images (bool, optional): Save images in filesystem. Note: this may take more time to load the imagelist. Defaults to False.
-        
+
         Raises:
             FileNotFoundError: Filesystem is not usable and no gamepath.
         """
-        
+
         super().__init__(filesystem, gamepath, assets, baseassets)
-        
+
         this.HD = HD
         this.TabHD = TabHD
-        
+
         if isinstance(file, str):
             this.filename = file
             newFile = HDFile(
@@ -62,7 +62,7 @@ class Imagelist(GameObject):
                 filesystem = this.filesystem,
                 gamepath = this.gamepath,
                 assets = this.assets,
-                baseassets = this.baseassets,
+                baseassets = this.baseassets
             )
 
             file = newFile.filename
@@ -77,7 +77,7 @@ class Imagelist(GameObject):
                 filesystem = this.filesystem,
                 gamepath = this.gamepath,
                 assets = this.assets,
-                baseassets = this.baseassets,
+                baseassets = this.baseassets
             )
 
             file = newFile.filename
@@ -85,24 +85,24 @@ class Imagelist(GameObject):
             this.TabHD = newFile.TabHD
         else:
             this.filename = ''
-        
+
         if isinstance(file, str):
             file = this.filesystem.get(file)
-        
+
         this.file = super().get_file(file, template = this.TEMPLATE)
 
         if isinstance(this.file, io.BytesIO):
             this.file.seek(0)
-        
+
         this.xml : etree.ElementBase = etree.parse(this.file).getroot()
-        
+
         this.pages : list[Imagelist.Page] = []
         this.format = this.Format.IMAGELIST
 
         # this.images = {}
 
         this.read(save_images = save_images)
-    
+
     def read(this, save_images : bool = False):
         """Read the imagelist xml.
 
@@ -110,34 +110,21 @@ class Imagelist(GameObject):
             save_images (bool, optional): Save images in filesystem. Note: this may take more time to load the imagelist. Defaults to False.
         """
         this.format = this.Format.IMAGELIST
-        
+
         for element in this.xml:
             if element is etree.Comment:
                 continue
-            
+
             if element.tag == 'Page':
                 this.format = this.Format.PAGES
-                page = this.Page(
-                    element,
-                    filesystem = this.filesystem,
-                    HD = this.HD,
-                    TabHD = this.TabHD,
-                    save_images = save_images,
-                )
-                
+                page = this.Page(element, filesystem = this.filesystem, HD = this.HD, TabHD = this.TabHD, save_images = save_images)
+
                 this.pages.append(page)
-        
+
         if this.format == this.Format.IMAGELIST:
-            page = this.Page(
-                this.xml,
-                filesystem = this.filesystem,
-                HD = this.HD,
-                TabHD = this.TabHD,
-                save_images = save_images,
-            )
-            
+            page = this.Page(this.xml, filesystem = this.filesystem, HD = this.HD, TabHD = this.TabHD, save_images = save_images)
             this.pages.append(page)
-    
+
     def update(this, gap : tuple[int,int] = (1,1), auto_fit = False):
         """Update the atlas image.
 
@@ -147,14 +134,8 @@ class Imagelist(GameObject):
         """
         for page in this.pages:
             page.update(gap = gap, auto_fit = auto_fit)
-    
-    def export(
-        this,
-        path : str = None,
-        exportImage : bool = True,
-        format : str = 'webp',
-        removeImageFiles : bool = True,
-    ):
+
+    def export(this, path : str = None, exportImage : bool = True, format : str = 'webp', removeImageFiles : bool = True):
         """Export the xml of the imagelist.
 
         Args:
@@ -174,39 +155,39 @@ class Imagelist(GameObject):
                 path = this.filename
         else:
             this.filename = path
-        
+
         # if path != None:
         #     path = getHDFile(
         #         path,
         #         HD = this.HD,
-        #         TabHD = this.TabHD,
+        #         TabHD = this.TabHD
         #     )
-        
+
         if removeImageFiles:
             this.removeImageFiles()
-        
+
         if path != None:
             if exportImage:
                 if this.format == this.Format.PAGES:
                     index = 0
                     for page in this.pages:
                         index += 1
-                        
+
                         filename = os.path.splitext(path)[0]
                         filename = f'{filename}_split_{str(index)}.{format}'
-                        
+
                         page.file = filename
                         page.exportAtlas(filename = filename, format = format)
-                        
+
                 else:
                     page = this.pages[0]
-                    
+
                     filename = os.path.splitext(path)[0]
                     filename = f'{filename}.{format}'
-                    
+
                     page.file = filename
                     page.exportAtlas(filename = filename, format = format)
-        
+
         if this.format == this.Format.IMAGELIST:
             page = this.pages[0]
             xml = page.getXML(format = this.format)
@@ -214,61 +195,46 @@ class Imagelist(GameObject):
             xml = etree.Element('Imagelist')
             for page in this.pages:
                 xml.append(page.getXML(format = this.format))
-            
+
         xmloutput = etree.tostring(xml, pretty_print=True, xml_declaration=True, encoding='utf-8')
-        
+
         if path != None:
             path = getHDFile(path, HD = this.HD, TabHD = this.TabHD)
-            
+
             if (file := this.filesystem.get(path)) != None:
                 if isinstance(file, Folder):
                     raise TypeError(f'Path {path} is not a file.')
-                
+
                 file.write(xmloutput)
-                
+
             else:
                 file = this.filesystem.add(path, xmloutput)
-        
-        output = {
-            'xml' : xmloutput,
-            'images' : [a.atlas for a in this.pages]
-        }
-        
+
+        output = {'xml' : xmloutput, 'images' : [a.atlas for a in this.pages]}
+
         return output
-    
+
     def combinePages(this):
         """Combine all the pages in this Imagelist into 1 Page
         """
         if this.format == this.Format.IMAGELIST:
             return
-        
+
         main = this.pages[0]
         for i in range(len(this.pages) - 1):
             page : this.Page = this.pages[i + 1]
             for name in page.images:
                 image = page.images[name]
-                main.add(
-                    image.name,
-                    image.image,
-                    image.properties,
-                    replace = False
-                )
-                
+                main.add(image.name, image.image, image.properties, replace = False)
+
         main.id = None
         main.exportAtlas()
-        
+
         this.format = this.Format.IMAGELIST
-        
+
         this.pages = [main]
-    
-    def add(
-        this,
-        name : str,
-        image : PIL.Image.Image,
-        properties : dict = {},
-        page : int | str = 0,
-        replace = False
-    ):
+
+    def add(this, name : str, image : PIL.Image.Image, properties : dict = {}, page : int | str = 0, replace = False):
         """Add image to imagelist.
 
         Args:
@@ -279,20 +245,15 @@ class Imagelist(GameObject):
 
         Raises:
             NameError: Image already exists.
-        
+
         Returns:
             Imagelist.Page.Image: Resulting imagelist image.
         """
         page : Imagelist.Page = this.getPage(page)
-        
+
         if page != None:
-            return page.add(
-                name = name,
-                image = image,
-                properties = properties,
-                replace = replace,
-            )
-    
+            return page.add(name = name, image = image, properties = properties, replace = replace)
+
     def get(this, name : str):
         """Get image from imagelist.
 
@@ -306,17 +267,17 @@ class Imagelist(GameObject):
             image = page.get(name)
             if image:
                 return image
-            
+
         return None
-        
+
         # return this.filesystem.get(os.path.join(this.textureBasePath, name))
-    
+
     def removeImageFiles(this):
         """Remove all image files in imagelist from filesystem.
         """
         for page in this.pages:
             page.removeImageFiles()
-    
+
     def getPage(this, id : int | str = 0) -> 'Imagelist.Page':
         """Get the page with this id / index.
 
@@ -336,7 +297,7 @@ class Imagelist(GameObject):
             return [p for p in this.pages if p.id == id][0]
         else:
             raise TypeError('id must be int or str')
-    
+
     class Page(GameObject):
         def __init__(
             this,
@@ -346,7 +307,7 @@ class Imagelist(GameObject):
             assets: str = '/assets',
             HD : bool = False,
             TabHD : bool = False,
-            save_images : bool = False,
+            save_images : bool = False
         ) -> None:
             """Page for Imagelist. This is also used when imagelist is not in pages format.
 
@@ -359,33 +320,33 @@ class Imagelist(GameObject):
                 save_images (bool, optional): Save images in filesystem. Note: this may take more time to load the imagelist. Defaults to False.
             """
             super().__init__(filesystem, gamepath, assets)
-            
+
             this.HD = HD
             this.TabHD = TabHD
-            
+
             this.xml : etree.ElementBase = element
-            
+
             this.atlas = None
             this.images : list[Imagelist.Page.Image] = []
             this.properties : dict[str,str] = {}
-            
+
             this.read(save_images = save_images)
-        
+
         def read(this, save_images : bool = False):
             """Read xml.
-            
+
             Args:
                 save_images (bool, optional): Save images in filesystem. Note: this may take more time to load the imagelist. Defaults to False.
             """
             this.properties = deepcopy(this.xml.attrib)
-    
+
             # if this.gamepath:
             #     this.fullAtlasPath = joinPath(this.gamepath, this.assets, this.file)
                 # print(this.fullAtlasPath)
-    
+
             this.getAtlas()
             this.getImages(save_images = save_images)
-        
+
         @property
         def imgSize(this) -> tuple[int,int]:
             """The size of the image in the properties. Does not have to reflect the size of the atlas.
@@ -405,7 +366,7 @@ class Imagelist(GameObject):
                 this.properties['imgSize'] = size
             else:
                 raise TypeError('size must be a tuple, list, or str')
-    
+
         @property
         def textureBasePath(this) -> str:
             """The base Textures path, or the place where the files are extracted to.
@@ -421,7 +382,7 @@ class Imagelist(GameObject):
         @textureBasePath.setter
         def textureBasePath(this, path):
             this.properties['textureBasePath'] = path
-        
+
         @property
         def file(this) -> str:
             """The path to the atlas file to use in this ImageList
@@ -436,7 +397,7 @@ class Imagelist(GameObject):
         @file.setter
         def file(this, path):
             this.properties['file'] = path
-        
+
         @property
         def id(this):
             """Page id
@@ -454,7 +415,7 @@ class Imagelist(GameObject):
                 this.properties['id'] = value
             else:
                 this.properties['id'] = str(value)
-    
+
         def getAtlas(this):
             """Get atlas image.
             """
@@ -468,9 +429,9 @@ class Imagelist(GameObject):
                     filesystem = this.filesystem,
                     gamepath = this.gamepath,
                     assets = this.assets,
-                    baseassets = this.baseassets,
+                    baseassets = this.baseassets
                 ).image
-    
+
         def getImages(this, save_images = False):
             """Get images from xml.
             Args:
@@ -479,17 +440,11 @@ class Imagelist(GameObject):
             for element in this.xml:
                 if element is etree.Comment:
                     continue
-                
+
                 if element.tag == 'Image':
-                    image = this.Image(
-                        this.atlas,
-                        properties = element.attrib,
-                        textureBasePath = this.textureBasePath,
-                        filesystem = this.filesystem.get(this.textureBasePath),
-                        save_image = save_images,
-                    )
+                    image = this.Image(this.atlas, properties = element.attrib, textureBasePath = this.textureBasePath, filesystem = this.filesystem.get(this.textureBasePath), save_image = save_images)
                     this.images.append(image)
-    
+
         def get(this, name : str) -> 'Imagelist.Page.Image':
             """Get an image from the imagelist
 
@@ -502,13 +457,8 @@ class Imagelist(GameObject):
             for image in this.images:
                 if image.name == name:
                     return image
-        
-        def add(self,
-                name : str,
-                image : PIL.Image.Image,
-                properties : dict = None,
-                replace = False,
-            ) -> 'Imagelist.Page.Image':
+
+        def add(self, name : str, image : PIL.Image.Image, properties : dict = None, replace = False) -> 'Imagelist.Page.Image':
             """Add image to imagelist.
 
             Args:
@@ -519,7 +469,7 @@ class Imagelist(GameObject):
 
             Raises:
                 NameError: Image already exists.
-            
+
             Returns:
                 Imagelist.Page.Image: Resulting imagelist image.
             """
@@ -528,17 +478,17 @@ class Imagelist(GameObject):
                 # print(f'Warning: "{name}" already in imagelist.')
                 if not replace:
                     raise NameError(f'Image "{name}" already exists.')
-            
+
                 self.images.remove(existing)
-            
+
             if properties == None:
                 properties = {}
-            
+
             properties = deepcopy(properties)
-            
+
             properties['name'] = name
-            properties['rect'] = ' '.join([str(_) for _ in (0,0) + image.size])
-            
+            properties['rect'] = ' '.join([str(_) for _ in (0, 0) + image.size])
+
             texture = self.Image(
                 image,
                 properties,
@@ -546,14 +496,14 @@ class Imagelist(GameObject):
                 filesystem = self.filesystem,
                 gamepath = self.gamepath,
                 assets = self.assets,
-                save_image = True,
+                save_image = True
             )
             self.images.append(texture)
-            
+
             self._getRects()
-            
+
             return texture
-        
+
         def update(this, gap : tuple[int,int] = (1,1), auto_fit = False):
             """Update the atlas image.
 
@@ -563,13 +513,13 @@ class Imagelist(GameObject):
             """
             for image in this.images:
                 image.image
-            
+
             this._getRects(gap = gap, auto_fit = auto_fit)
             this._updateAtlas()
-            
+
             return this.atlas
-        
-        def exportAtlas(this, filename = None, gap : tuple = (1,1), auto_fit = False, format : str = 'webp', ):
+
+        def exportAtlas(this, filename = None, gap : tuple = (1,1), auto_fit = False, format : str = 'webp'):
             """Export the atlas image into the Filesystem. This function recreates the imagelist, so you need to also export the xml using `getXML()`.
 
             Args:
@@ -583,23 +533,23 @@ class Imagelist(GameObject):
             """
             this.update(gap = gap, auto_fit = auto_fit)
             file = io.BytesIO()
-            
+
             this.atlas.save(file, format=format, lossless = True, exact = True)
-            
+
             if filename == None:
                 filename = f'{os.path.splitext(this.file)[0]}.{format}'
-            
+
             this.file = filename
-            
+
             filename = getHDFile(filename, this.HD, this.TabHD)
-            
+
             if this.filesystem.exists(filename):
                 this.filesystem.get(filename).rawdata = file
             else:
                 this.filesystem.add(filename, file.getvalue())
-            
+
             return this.atlas
-        
+
         def getXML(this, filename = None, format : int = 1):
             """Generates the xml for the page / imagelist.
 
@@ -612,27 +562,25 @@ class Imagelist(GameObject):
             """
             if filename != None:
                 this.file = filename
-            
+
             tag = 'Page' if format else 'ImageList'
-            
+
             this.imgSize = this.atlas.size
-            
-            
+
             xml : etree.ElementBase = etree.Element(tag, **this.properties)
-            
+
             for image in this.images:
                 xml.append(image.getXML())
-            
+
             this.xml = xml
             return this.xml
-        
+
         def removeImageFiles(this):
             """Remove all image files from filesystem.
             """
             for image in this.images:
                 image.removeFile()
-            
-        
+
         def _getRects(this, gap : tuple = (1,1), auto_fit = False):
             """Update the rect for all images.
 
@@ -644,15 +592,15 @@ class Imagelist(GameObject):
             x, y = gap
             maxheight = maxwidth = 0
             row = column = 0
-            
+
             for image in this.images:
                 image.rect = (x,y) + image.size
-                
+
                 if x > maxwidth:
                     maxwidth = x
-                
+
                 x += image.size[0] + gap[0]
-                
+
                 column += 1
                 if x > this.imgSize[0]:
                     x = gap[0]
@@ -660,22 +608,21 @@ class Imagelist(GameObject):
                     maxheight = 0
                     column = 0
                     row += 1
-                
+
                 if column == 0:
                     image.rect = (x,y) + image.size
                     x += image.size[0] + gap[0]
-                
+
                 if image.size[1] > maxheight:
                     maxheight = image.size[1]
-            
+
             y += maxheight + gap[1]
-            
+
             if auto_fit:
                 this.imgSize = (maxwidth,y)
             elif y > this.imgSize[1]:
                 this.imgSize = (this.imgSize[0], y)
-            
-                
+
         def _updateAtlas(this) -> PIL.Image.Image:
             """Update the atlas image.
 
@@ -683,13 +630,13 @@ class Imagelist(GameObject):
                 PIL.Image.Image: PIL Image.
             """
             atlas : PIL.Image.Image = PIL.Image.new('RGBA', this.imgSize)
-            
+
             for image in this.images:
                 image.atlas = atlas
                 atlas.paste(image.image, image.rect[0:2])
-            
+
             this.atlas = atlas
-            
+
             # this.atlas = Texture(
             #     atlas,
             #     filesystem = this.filesystem,
@@ -700,7 +647,7 @@ class Imagelist(GameObject):
             #     TabHD = this.TabHD,
             # )
             return this.atlas
-    
+
         class Image(GameObject):
             def __init__(
                 this,
@@ -711,7 +658,7 @@ class Imagelist(GameObject):
                 gamepath: str = None,
                 assets: str = '/assets',
                 baseassets : str = '/',
-                save_image : bool = False,
+                save_image : bool = False
             ) -> None:
                 """Image for Imagelist
 
@@ -735,7 +682,7 @@ class Imagelist(GameObject):
 
                 if save_image:
                     this.getImage()
-            
+
             @property
             def size(this) -> tuple[int,int]:
                 """The size of the image.
@@ -765,13 +712,13 @@ class Imagelist(GameObject):
 
                 Returns:
                     tuple[int,int]: (x,y)
-                
+
                 (I have no idea what this is for)
                 """
                 if 'offset' in this.properties:
                     return tuple([int(v) for v in this.properties['offset'].split()])
                 else:
-                    this.offset = (0,0)
+                    this.offset = (0, 0)
                     return this.offset
             @offset.setter
             def offset(this, value : tuple | list | str):
@@ -785,17 +732,17 @@ class Imagelist(GameObject):
                     raise TypeError('value must be tuple, list or str')
 
             @property
-            def rect(this) -> tuple[int,int,int,int]:
+            def rect(this) -> tuple[int, int, int, int]:
                 """The rectangle of this image inside the atlas
 
                 Returns:
-                    tuple[int,int,int,int]: (x,y,width,height)
+                    tuple[int, int, int, int]: (x,y,width,height)
                 """
-                
+
                 if 'rect' in this.properties:
                     return tuple([int(v) for v in this.properties['rect'].split()])
                 else:
-                    this.rect = (0,0) + this.size
+                    this.rect = (0, 0) + this.size
                     return this.rect
             @rect.setter
             def rect(this, value : tuple | list | str):
@@ -807,7 +754,7 @@ class Imagelist(GameObject):
                     this.properties['rect'] = value
                 else:
                     raise TypeError('value must be tuple, list or str')
-            
+
             @property
             def name(this) -> str:
                 """The name of the image
@@ -823,7 +770,7 @@ class Imagelist(GameObject):
             @name.setter
             def name(this, name : str):
                 this.properties['name'] = str(name)
-            
+
             @property
             def image(this):
                 """The resulting PIL Image.
@@ -833,9 +780,9 @@ class Imagelist(GameObject):
                 """
                 if this._image == None:
                     this.getImage()
-                
+
                 return this._image.copy()
-            
+
             @image.setter
             def image(this, image : PIL.Image.Image):
                 this._image = image.copy()
@@ -846,18 +793,18 @@ class Imagelist(GameObject):
                 Returns:
                     PIL.Image.Image: PIL Image.
                 """
-                this._image = this.atlas.crop(numpy.add(this.rect, (0,0) + this.rect[0:2]))
+                this._image = this.atlas.crop(numpy.add(this.rect, (0, 0) + this.rect[0:2]))
                 this._image = this._image.resize(this.size)
-                
+
                 this._image.save(this.rawdata, format = os.path.splitext(this.name)[1][1::].upper())
                 return this._image
 
             def show(this, *args, **kwargs):
                 """Calls the PIL.Image.Image.show() method.
-                
+
                 ---
                 #### Description copied from the PIL library
-                
+
                 Displays this image. This method is mainly intended for debugging purposes.
 
                 This method calls PIL.ImageShow.show internally. You can use
@@ -875,7 +822,7 @@ class Imagelist(GameObject):
                     title (str | None, optional): Optional title to use for the image window, where possible.. Defaults to None.
                 """
                 this.image.show(*args, **kwargs)
-            
+
             def getXML(this, tag = 'Image'):
                 """Get xml for image.
 
@@ -883,15 +830,14 @@ class Imagelist(GameObject):
                     lxml.etree.Element: lxml element
                 """
                 xml : etree.ElementBase = etree.Element(tag, **this.properties)
-                
+
                 return xml
-            
+
             def removeFile(this):
                 """Remove file from filesystem.
                 """
                 return this.filesystem.remove(this.filename)
-                
-            
+
             def saveFile(this, replace : bool = False):
                 """Save image to filesystem.
 
@@ -899,12 +845,8 @@ class Imagelist(GameObject):
                     replace (bool, optional): Whether to replace any existing file. Defaults to False.
                 """
                 this.image.save(this.rawdata, os.path.splitext(this.name)[1][1::])
-                this.filesystem.add(
-                    this.name,
-                    content = this.rawdata.getvalue(),
-                    replace = replace,
-                )
-            
+                this.filesystem.add(this.name, content = this.rawdata.getvalue(), replace = replace)
+
             @property
             def filename(this) -> str:
                 """Image filepath in the Filesystem
@@ -915,9 +857,9 @@ class Imagelist(GameObject):
                 file = this.filesystem.get(this.name)
                 if file != None:
                     return file.path
-                
+
                 return this.name
-            
+
             def __str__(self) -> str:
                 return etree.tostring(self.getXML()).decode()
 

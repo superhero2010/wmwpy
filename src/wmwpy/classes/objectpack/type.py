@@ -6,42 +6,41 @@ from typing import TYPE_CHECKING
 # if TYPE_CHECKING:
 from ..object import Object
 
-
 class Type():
     """The Type class is an object used to modify an object image / properties on a case-by-case basis.
-    
+
     Attributes:
         NAME (str): The name of the Type property in objects that this is for.
         PROPERTIES (dict): All the default properties that this object type has.
-    
+
     ## Defining the type
     To get started, the new type must inherit from the `Type` class. There are also a few contants that need to be defined.
     ```python
     from wmwpy.classes.objectpacks import Type
-    
+
     class yswitch(Type):
         NAME = 'yswitch'
         PROPERTIES = {
             'YSwitchPosition' : {
                 'type' : 'bit',
-                'default' : '0',
+                'default' : '0'
             },
             'ToggleSpriteIndex' : {
                 'type' : 'int',
-                'default' : '1',
-            },
+                'default' : '1'
+            }
         }
     ```
-    
+
     ## The `PROPERTIES` attribute
-    
+
     The `PROPERTIES` attribute is a dictionary of the properties, which are also dictionaries containing the value type, default value, and options, if any. For example
-    
+
     ```python
     PROPERTIES = {
         "ExpulsionAngle": {
             'type' : 'float',
-            'default' : '0.0',
+            'default' : '0.0'
         },
         "FluidType": {
             'type' : 'string',
@@ -53,95 +52,75 @@ class Type():
                 "steam",
                 "mud",
                 "drymud",
-                "wetmud",
-            ],
-        },
+                "wetmud"
+            ]
+        }
     }
     ```
-    
+
     The possible types are explained in `Type.value`.
-    
+
     ## Getting the sprites ready
-    
+
     After you've defined the `NAME` and `PROPERTIES`, you can then get the sprites ready for the image.
-    
+
     ```python
     class yswitch(Type):
         NAME = 'yswitch'
         PROPERTIES = {
             'YSwitchPosition' : {
                 'type' : 'bit',
-                'default' : '0',
+                'default' : '0'
             },
             'ToggleSpriteIndex' : {
                 'type' : 'int',
-                'default' : '1',
-            },
+                'default' : '1'
+            }
         }
 
         def ready_sprites(self):
             YSwitchPosition = self.get_property('YSwitchPosition')
-            
+
             ToggleSpriteIndex = self.get_property('ToggleSpriteIndex')
-            
+
             if YSwitchPosition != 1:
                 YSwitchPosition = 0
-            
+
             self.obj.sprites[ToggleSpriteIndex].angle = (360 / -3) * (YSwitchPosition + 1)
     ```
-    
+
     The sprites and object is in a safe mode when this is called, meaning, you can modify the properties without worrying about them carrying onto the output xml.
-    
+
     ## Required properties in the level xml
-    
+
     If the object requires some properties to always be in the level xml, even if they are different from their default property, you can specify it.
-    
+
     ```python
     from wmwpy.classes.objectpacks import Type
-    
+
     class fluidconverter(Type):
         NAME = 'fluidconverter'
-        
+
         def ready_properties(self):
             return super().ready_properties(include = [
                 'FluidType',
                 'FluidType#',
                 'StartingFluidType',
-                'ConverterType',
+                'ConverterType'
             ])
     ```
-    
+
     """
-    
+
     NAME : str = ''
     PROPERTIES : dict[str, dict[typing.Literal['type', 'default', 'options'], str | list[str]]] = {}
-    
-    DEFAULT_PROPERTY = {
-        'type' : 'string',
-        'default' : '',
-    }
-    
-    VALUE_TYPES = [
-        'string',
-        'float',
-        'int',
-        'bit',
-        'vector',
-        'vector,...',
-    ]
-    
-    TYPE_ALIASES = {
-        'file': 'string',
-        'fluid': 'string',
-        'angle': 'float',
-        'radius': 'float',
-        'index': 'int',
-        'pos': 'float float',
-        'offset': 'float float',
-        'rgb': 'int int int',
-        'rgba': 'int int int int',
-    }
-    
+
+    DEFAULT_PROPERTY = {'type' : 'string', 'default' : ''}
+
+    VALUE_TYPES = ['string', 'float', 'int', 'bit', 'vector', 'vector,...']
+
+    TYPE_ALIASES = {'file': 'string', 'fluid': 'string', 'angle': 'float', 'radius': 'float', 'index': 'int', 'pos': 'float float', 'offset': 'float float', 'rgb': 'int int int', 'rgba': 'int int int int'}
+
     def __init__(self, obj : 'Object' = None) -> None:
         """Object Type class.
 
@@ -149,7 +128,7 @@ class Type():
             obj (Object, optional): The object to be modified in this Type. Defaults to None.
         """
         self.obj = obj
-    
+
     def split_property_num(self, property) -> tuple[str,str]:
         """Split a property name and number, such as, 'ConnectedSpout0' returns `('ConnectedSpout', '0')`.
 
@@ -164,48 +143,48 @@ class Type():
         """
         if not isinstance(property, str):
             raise TypeError('property must be str')
-        
+
         head = property.rstrip('0123456789#')
         tail = property[len(head):]
         return head, tail
-    
+
     def ready_sprites(self,):
         """Get the sprites ready for generating the object image.
-        
+
         In this method, you can modify any object or sprites properties to generate the correct image based on the object properties. There are also many methods that can be used to make the process easier.
-        
+
         ```python
         from wmwpy.classes.objectpacks import Type
-        
+
         class yswitch(Type):
             NAME = 'yswitch'
-        
+
             def ready_sprites(self):
                 YSwitchPosition = self.get_property('YSwitchPosition')
-        
+
                 ToggleSpriteIndex = self.get_property('ToggleSpriteIndex')
-                
+
                 if YSwitchPosition != 1:
                     YSwitchPosition = 0
-                
+
                 self.obj.sprites[ToggleSpriteIndex].angle = (360 / -3) * (YSwitchPosition + 1)
         ```
-        
+
         You can also modify sprite images directly.
-        
+
         ```python
         from wmwpy.classes.objectpacks import Type
         from wmwpy.utils import imageprocessing
-        
+
         class star(Type):
             NAME = 'star'
-        
+
             def ready_sprites(self):
                 StarType = self.get_property('StarType').lower()
-                
+
                 if StarType == 'note':
                     color = tuple(self.get_property('Color'))
-                    
+
                     try:
                         self.obj.sprites[2].image = imageprocessing.recolor_image(
                             self.obj.sprites[2].image,
@@ -214,10 +193,10 @@ class Type():
                     except:
                         pass
         ```
-        
+
         """
         pass
-    
+
     def value(
         self,
         value : str,
@@ -232,15 +211,15 @@ class Type():
             'angle',
             'index',
             'pos',
-            'offset',
-        ] | str = 'string',
+            'offset'
+        ] | str = 'string'
     ) -> str | float | int | list[str | float | int] | list[list[str | float | int]]:
         """Convert this value from a string to a python build-in data type.
-        
+
         Args:
             value (str): The value
             type (str, optional): The value type. Defaults to 'string'.
-        
+
         - 'string'
         - 'float'
         - 'int'
@@ -250,7 +229,7 @@ class Type():
         - '<Vector>,...' (list of types separated by spaces, but also repeated by commas, e.g. 'string int,...')
 
         There are also some type aliases.
-        
+
         - 'fluid' -> 'string'
         - 'angle' -> 'float'
         - 'radius' -> 'float'
@@ -259,9 +238,9 @@ class Type():
         - 'offset' -> 'float float'
         - 'rgb' -> 'int int int'
         - 'rgba' -> 'int int int int'
-        
+
         You can even use something like 'index:sprite' to indicate a sprite index.
-        
+
         Example
         ```python
         >> Type().value('foo', 'string')
@@ -281,53 +260,45 @@ class Type():
                 return int(float(value))
             except:
                 return 0
-        
+
         def getfloat(value : str):
             try:
                 return float(value)
             except:
                 return 0.0
-        
-        types : dict[str, typing.Callable[[str], str | float | int]] = {
-            'string' : str,
-            'float' : getfloat,
-            'int' : getint,
-            'bit' : getint,
-        }
-        
-        arrays : dict[str, typing.Callable[[str], list[str]]] = {
-            'comma' : lambda string : string.split(','),
-            'spaced' : lambda string : string.split(),
-        }
-        
+
+        types : dict[str, typing.Callable[[str], str | float | int]] = {'string' : str, 'float' : getfloat, 'int' : getint, 'bit' : getint}
+
+        arrays : dict[str, typing.Callable[[str], list[str]]] = {'comma' : lambda string : string.split(','), 'spaced' : lambda string : string.split()}
+
         type_prefix = type.split(':', 1)[0]
         if type_prefix in self.TYPE_ALIASES:
             type = self.TYPE_ALIASES.get(type_prefix, 'string')
-        
+
         values = []
-        
+
         for array in arrays:
             array_types = arrays[array](type)
-            
+
             if len(array_types) > 1:
                 values = arrays[array](value)
                 new_values = []
-                
+
                 type_index = 0
-                
+
                 for val in values:
                     if array_types[type_index] == '...':
                         type_index = 0
                     new_values.append(self.value(value = val, type = array_types[type_index]))
-                    
+
                     type_index += 1
-                
+
                 return new_values
-        
+
         if isinstance(value, str):
             value = value.strip()
         return types.get(type, types['string'])(value)
-    
+
     def ready_properties(self, include : list[str] = None) -> dict[str,str]:
         """Ready the properties before they are put into the level xml. By default, properties that are equal to their default property counterpart are removed, except 'Type', 'Angle', and 'Filename'.
 
@@ -336,14 +307,14 @@ class Type():
 
         Returns:
             dict[str,str]: The new properties.
-        
+
         To use this inside a custom Type, just call the super() with the include argument.
         ```python
         from wmwpy.classes.objectpacks import Type
-        
+
         class fluidconverter(Type):
             NAME = 'fluidconverter'
-            
+
             def ready_properties(self):
                 return super().ready_properties(include = [
                     'FluidType',
@@ -355,12 +326,12 @@ class Type():
         """
         if not isinstance(include, list):
             include = []
-        
+
         properties = self.obj.properties
         self.obj.properties = deepcopy(properties)
-        
+
         include += ['Type', 'Angle', 'Filename']
-        
+
         for property in properties:
             if property in include:
                 continue
@@ -380,20 +351,17 @@ class Type():
                     if prop == property:
                         found_property = True
                         break
-            
+
             if found_property:
                 continue
-            
+
             if property in self.obj.defaultProperties:
                 if property in self.obj.properties and self.obj.properties[property] == self.obj.defaultProperties[property]:
                     del self.obj.properties[property]
-        
+
         return self.obj.properties
 
-    def get_property(
-        self,
-        property : str,
-    ) -> str | float | int | list[str | float | int] | list[list[str | float | int]]:
+    def get_property(self, property : str) -> str | float | int | list[str | float | int] | list[list[str | float | int]]:
         """Get the property from the object. If the object doesn't have the property it looks for the default property, then on the Type object itself.
 
         Args:
@@ -403,71 +371,54 @@ class Type():
             str | float | int | list[str | float | int], list[list[str | float | int]]: The resulting value as python built-in data type.
         """
         if not isinstance(self.obj, Object):
-            prop = self.PROPERTIES.get(
-                property,
-                self.DEFAULT_PROPERTY
-            )
-            
+            prop = self.PROPERTIES.get(property, self.DEFAULT_PROPERTY)
+
             result = None
-            
+
             if 'default' in prop:
                 value = prop['default']
                 type = prop['type']
-                
+
                 result = self.value(value, type)
-            
+
             return result
-        
-        value = self.obj.properties.get(
-            property,
-            self.obj.defaultProperties.get(
-                property,
-            )
-        )
-        
+
+        value = self.obj.properties.get(property, self.obj.defaultProperties.get(property))
+
         if value == None:
             value = self.PROPERTIES.get(property).get('default')
-        
+
         split_property = self.split_property_num(property)
         if split_property[1]:
-            value = self.value(
-                value,
-                self.PROPERTIES.get(split_property[0] + '#', {}).get('type', 'string'),
-            )
+            value = self.value(value, self.PROPERTIES.get(split_property[0] + '#', {}).get('type', 'string'))
         else:
-            value = self.value(
-                value,
-                self.PROPERTIES.get(property, {}).get('type', 'string'),
-            )
-        
+            value = self.value(value, self.PROPERTIES.get(property, {}).get('type', 'string'))
+
         return value
-    
+
     def get_properties(self, property: str) -> dict[str, typing.Any]:
         def getint(value : str):
             try:
                 return int(float(value))
             except:
                 return value
-        
+
         result = {}
-        
+
         logging.debug(f'property: {property}')
         if property.endswith('#'):
             properties = set(self.obj.defaultProperties.keys())
             properties.update(self.obj.properties.keys())
-            
+
             split_property = self.split_property_num(property)
-            filtered_properties = sorted(filter(
-                lambda name: self.split_property_num(name)[0] == split_property[0],
-                properties,
-            ), key = lambda name: getint(self.split_property_num(name)[1]))
+            filtered_properties = sorted(filter(lambda name: self.split_property_num(name)[0] == split_property[0], properties), key = lambda name: getint(self.split_property_num(name)[1]))
 
             logging.debug(f'filtered properties: {filtered_properties}')
-            
+
             for name in filtered_properties:
                 result[name] = self.get_property(name)
-            
+
         else:
             result[property] = self.get_property(property)
-        
+
         return result

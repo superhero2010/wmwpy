@@ -4,13 +4,10 @@ from ..utils.filesystem import File, Filesystem, Folder
 from ..utils.textures import getHDFile
 from ..utils.waltex import Waltex
 
-
 from PIL import Image
-
 
 import io
 import os
-
 
 class Texture(GameObject):
     def __init__(
@@ -21,7 +18,7 @@ class Texture(GameObject):
         assets : str = '/assets',
         baseassets : str = '/',
         HD = False,
-        TabHD = False,
+        TabHD = False
     ) -> None:
         """Texture for image.
         Args:
@@ -54,7 +51,7 @@ class Texture(GameObject):
                 filesystem = this.filesystem,
                 gamepath = this.gamepath,
                 assets = this.assets,
-                baseassets = this.baseassets,
+                baseassets = this.baseassets
             )
         else:
             this.filename = ''
@@ -75,7 +72,7 @@ class Texture(GameObject):
             this.image = this._file.read()
         else:
             raise TypeError('image must be PIL.Image.Image, Waltex, or filesystem.File.')
-        
+
         # this._textureSettings = TextureSettings(
         #     filesystem = this.filesystem,
         #     gamepath = this.gamepath,
@@ -115,13 +112,13 @@ class Texture(GameObject):
         file = this.filesystem.add(filename, fileio, replace = True)
 
         return file
-    
+
     def show(self, *args, **kwargs):
         """Calls the PIL.Image.Image.show() method.
-        
+
         ---
         #### Description copied from the PIL library
-        
+
         Displays this image. This method is mainly intended for debugging purposes.
 
         This method calls PIL.ImageShow.show internally. You can use

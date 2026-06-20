@@ -2,7 +2,6 @@
 from ...utils.filesystem import Filesystem, Folder
 from ...gameobject import GameObject
 
-
 from PIL import Image
 from lxml import etree
 
@@ -16,17 +15,16 @@ class Widget(GameObject):
         gamepath: str = None,
         assets: str = '/assets',
         baseassets: str = '/',
-        screenSize : tuple = (900,720),
+        screenSize : tuple = (900, 720)
     ) -> None:
         """
             Main widget
         """
         if xml == None:
             return
-        
-        
+
         super().__init__(filesystem, gamepath, assets, baseassets)
-        
+
         this.xml = xml
         this.properties = this.xml.attrib
         this.type = this.properties['type']
@@ -83,7 +81,6 @@ class Widget(GameObject):
             this.__class__ = WIDGETS[this.properties['type']]
         else:
             this.__class__ = Widget
-
 
 def register_widget(name : str, class_ : Widget):
 

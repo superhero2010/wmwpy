@@ -9,7 +9,7 @@ def joinPath(*args : str) -> str:
     Returns:
         str: New path
     """
-    
+
     if len(args) == 0:
         return ''
 
@@ -30,7 +30,7 @@ def makeRelativePath(path : str) -> str:
     parts = pathlib.Path(path).parts
     if len(parts) == 0:
         return path
-    
+
     if parts[0] in ['\\', '/']:
         return pathlib.Path(*parts[1::]).as_posix()
     return path

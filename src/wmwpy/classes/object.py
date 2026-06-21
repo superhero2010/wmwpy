@@ -784,12 +784,12 @@ class Shape(GameObject):
         Returns:
             PIL.Image.Image: PIL Image
         """
-        points = numpy.array(self.points).swapaxes(0,1)
+        points = numpy.array(self.points).swapaxes(0, 1)
 
         min = numpy.array([math.floor(v.min()) for v in points])
         max = numpy.array([math.ceil(v.max()) for v in points])
 
-        offset = numpy.array([a.mean() for a in numpy.array([min,max]).swapaxes(0,1)])
+        offset = numpy.array([a.mean() for a in numpy.array([min,max]).swapaxes(0, 1)])
         # offset = offset * [1, -1]
         # print(f'{offset = }')
 

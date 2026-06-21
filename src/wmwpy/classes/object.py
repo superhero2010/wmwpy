@@ -813,6 +813,6 @@ class Shape(GameObject):
             line = line.flatten()
             line = tuple([round(x) for x in line])
 
-            draw.line(line, fill=0, width=1)
+            draw.line(line, fill = 0, width = 1)
 
         return image

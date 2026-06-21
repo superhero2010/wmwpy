@@ -22,6 +22,7 @@ from ..utils import path
 from ..gameobject import GameObject
 from .texture import Texture
 
+
 class Sprite(GameObject):
     """wmwpy Sprite.
     
@@ -32,22 +33,23 @@ class Sprite(GameObject):
         animations (list[Sprite.Animation]): List of animations.
         scale (float): The image scale.
     """
-    
+
     TEMPLATE = b"""<?xml version="1.0"?>
 <Sprite>
 </Sprite>
 """
-    
+
     def __init__(
         this,
-        file : str | bytes | File = None,
+        file: str | bytes | File = None,
         filesystem: Filesystem | Folder = None,
-        gamepath: str = None, assets: str = '/assets',
-        baseassets : str = '/',
-        properties : dict = {},
-        scale : float = 50,
-        HD : bool = False,
-        TabHD : bool = False,
+        gamepath: str = None,
+        assets: str = '/assets',
+        baseassets: str = '/',
+        properties: dict = {},
+        scale: float = 50,
+        HD: bool = False,
+        TabHD: bool = False,
     ) -> None:
         """Game sprite.
 
@@ -62,35 +64,35 @@ class Sprite(GameObject):
             HD (bool, optional): Use HD images. Defaults to False.
             TabHD (bool, optional): Use TabHD images. Defaults to False.
         """
-        
+
         super().__init__(filesystem, gamepath, assets, baseassets)
-        
+
         this.file = super().get_file(file, template = this.TEMPLATE)
 
-        this.xml : etree.ElementBase = etree.parse(this.file).getroot()
-        
+        this.xml: etree.ElementBase = etree.parse(this.file).getroot()
+
         this.HD = HD
         this.TabHD = TabHD
-        
+
         this.properties = deepcopy(properties)
         this._properties = deepcopy(this.properties)
-        this.animations : list[Sprite.Animation] = []
-        
+        this.animations: list[Sprite.Animation] = []
+
         this.SAFE_MODE = False
-        
+
         this.scale = scale
-        
+
         this.readXML()
         this.animation = 0
-    
-    def setAnimation(this, animation : str | int):
+
+    def setAnimation(this, animation: str | int):
         """Set the current animation for the Sprite
 
         Args:
             animation (str | int): Animation name or index.
         """
         this.animation = animation
-    
+
     @property
     def SAFE_MODE(this) -> bool:
         """A "safe mode" where you can modify the properties without them being added to the output xml.
@@ -100,13 +102,14 @@ class Sprite(GameObject):
         """
         if not hasattr(this, '_SAFE_MODE'):
             this._SAFE_MODE = False
-        
+
         return this._SAFE_MODE
+
     @SAFE_MODE.setter
-    def SAFE_MODE(this, mode : bool):
+    def SAFE_MODE(this, mode: bool):
         if not isinstance(mode, bool):
             raise TypeError('mode must be True or False')
-        
+
         if mode:
             if not this.SAFE_MODE:
                 this._properties = deepcopy(this.properties)
@@ -115,12 +118,12 @@ class Sprite(GameObject):
             if this.SAFE_MODE:
                 this.properties = deepcopy(this._properties)
                 this._image = None
-        
+
         for animation in this.animations:
             animation.SAFE_MODE = mode
-        
+
         this._SAFE_MODE = mode
-    
+
     @property
     def image(this) -> Image.Image:
         """Image of sprite
@@ -133,28 +136,29 @@ class Sprite(GameObject):
             if hasattr(this, '_image'):
                 if isinstance(this._image, Image.Image):
                     return this._image.copy()
-        
+
         image = this.animation.image.copy()
         gridSize = numpy.array(this.gridSize)
-        
+
         # print(f'{gridSize = }')
         # print(f'{this.scale = }')
-        
+
         size = gridSize * this.scale
         size = [max(1, abs(round(x))) for x in size]
         image = image.resize(size)
-        
-        image = image.rotate(this.angle, Image.BILINEAR, expand=True)
-        
+
+        image = image.rotate(this.angle, Image.BILINEAR, expand = True)
+
         this._image = image
         return image
+
     @image.setter
-    def image(this, image : Image.Image):
+    def image(this, image: Image.Image):
         if isinstance(image, Image.Image):
             this._image = image
         else:
             raise TypeError('image must be instance of PIL.Image.Image')
-    
+
     @property
     def animation(this) -> 'Sprite.Animation':
         """Returns the current animation
@@ -163,8 +167,9 @@ class Sprite(GameObject):
             Sprite.Animation: A Sprite.Animation class
         """
         return this._currentAnimation
+
     @animation.setter
-    def animation(this, animation : str | int):
+    def animation(this, animation: str | int):
         if isinstance(animation, (int, float)):
             animation = int(animation)
             if animation < len(this.animations):
@@ -176,7 +181,7 @@ class Sprite(GameObject):
                     break
         elif isinstance(animation, this.Animation):
             this._currentAnimation = animation
-    
+
     @property
     def frames(this) -> list['Sprite.Animation.Frame']:
         """Returns the current animation frames.
@@ -185,7 +190,7 @@ class Sprite(GameObject):
             list[Sprite.Animation.Frame]: A list of frames.
         """
         return this.animation.frames
-    
+
     @property
     def frame(this) -> int:
         """The current animation frame.
@@ -194,14 +199,15 @@ class Sprite(GameObject):
             int: Current animation frame index.
         """
         return this.animation.frame
+
     @frame.setter
-    def frame(this, value : int):
+    def frame(this, value: int):
         this.animation.frame = value
-    
+
     @property
     def fps(this) -> float:
         return this.animation.fps
-    
+
     @property
     def filename(this) -> str:
         """Sprite filename
@@ -210,21 +216,22 @@ class Sprite(GameObject):
             return this.properties['filename']
         else:
             return None
+
     @filename.setter
     def filename(this, value):
         this.properties['filename'] = value
-        
+
     def readXML(this):
         """Read Sprite XML
         """
         if this.file == None:
             return
-        
+
         this.animations = []
         for element in this.xml:
             if element is etree.Comment:
                 continue
-            
+
             if element.tag == 'Animation':
                 animation = this.Animation(
                     element,
@@ -232,10 +239,10 @@ class Sprite(GameObject):
                     HD = this.HD,
                     TabHD = this.TabHD,
                 )
-                
+
                 this.animations.append(animation)
-    
-    def export(this, path : str = None) -> bytes:
+
+    def export(this, path: str = None) -> bytes:
         """Export the Sprite XML file
 
         Args:
@@ -247,19 +254,21 @@ class Sprite(GameObject):
         Returns:
             bytes: Contents of saved file.
         """
-        xml : etree.ElementBase = etree.Element('Sprite')
-        
+        xml: etree.ElementBase = etree.Element('Sprite')
+
         for animation in this.animations:
             xml.append(animation.getXML())
-        
+
         this.xml = xml
-        
-        output = etree.tostring(xml, pretty_print=True, xml_declaration=True, encoding='utf-8')
-        
+
+        output = etree.tostring(
+            xml, pretty_print = True, xml_declaration = True, encoding = 'utf-8'
+        )
+
         if path == None:
             if this.filename:
                 path = this.filename
-        
+
         if path != None:
             if (file := this.filesystem.get(path)) != None:
                 if isinstance(file, File):
@@ -268,9 +277,9 @@ class Sprite(GameObject):
                     raise TypeError(f'Path {path} is not a file.')
             else:
                 this.filesystem.add(path, output)
-        
+
         return output
-    
+
     @property
     def visible(this) -> bool:
         """Whether this Sprite is visible or not
@@ -278,10 +287,11 @@ class Sprite(GameObject):
         if 'visible' in this.properties:
             return strbool(this.properties['visible'])
         return False
+
     @visible.setter
-    def visible(this, value : bool | str):
+    def visible(this, value: bool | str):
         this.properties['visible'] = str(strbool(value)).lower()
-    
+
     @property
     def isBackground(this):
         """Whether this Sprite is a background
@@ -289,12 +299,13 @@ class Sprite(GameObject):
         if 'isBackground' in this.properties:
             return strbool(this.properties['isBackground'])
         return False
+
     @isBackground.setter
-    def isBackground(this, value : bool | str):
+    def isBackground(this, value: bool | str):
         this.properties['isBackground'] = str(strbool(value)).lower()
-    
+
     @property
-    def gridSize(this) -> tuple[float,float]:
+    def gridSize(this) -> tuple[float, float]:
         """The gridSize (size) of this Sprite
 
         Returns:
@@ -302,16 +313,17 @@ class Sprite(GameObject):
         """
         if 'gridSize' in this.properties:
             return tuple([float(x) for x in this.properties['gridSize'].split()])
-        return (1,1)
+        return (1, 1)
+
     @gridSize.setter
-    def gridSize(this, value : tuple[int,int] | str):
+    def gridSize(this, value: tuple[int, int] | str):
         if isinstance(value, str):
             this.properties['gridSize'] = value
         elif isinstance(value, (tuple, list)):
             this.properties['gridSize'] = ' '.join([str(x) for x in value])
-    
+
     @property
-    def pos(this) -> tuple[float,float]:
+    def pos(this) -> tuple[float, float]:
         """Position of Sprite relative to the center of the Object
 
         Returns:
@@ -319,14 +331,15 @@ class Sprite(GameObject):
         """
         if 'pos' in this.properties:
             return tuple([float(x) for x in this.properties['pos'].split()])
-        return (0,0)
+        return (0, 0)
+
     @pos.setter
-    def pos(this, value : tuple[int,int] | str):
+    def pos(this, value: tuple[int, int] | str):
         if isinstance(value, str):
             this.properties['pos'] = value
         elif isinstance(value, (tuple, list)):
             this.properties['pos'] = ' '.join([str(x) for x in value])
-    
+
     @property
     def angle(this) -> float:
         """Sprite rotation angle
@@ -337,25 +350,20 @@ class Sprite(GameObject):
         if 'angle' in this.properties:
             return float(this.properties['angle'])
         return 0
+
     @angle.setter
-    def angle(this, value : int | float):
+    def angle(this, value: int | float):
         this.properties['angle'] = str(value)
-    
+
     def getAnimation(
         this,
-        duration : int = 0,
-        fps : float = 0,
-    ) -> dict[
-        typing.Literal[
-            'fps',
-            'frame_duration',
-            'frames',
-        ],
-        float |
-        int |
-        list[Image.Image]
-    ]:
-        
+        duration: int = 0,
+        fps: float = 0,
+    ) -> dict[typing.Literal[
+        'fps',
+        'frame_duration',
+        'frames',
+    ], float | int | list[Image.Image]]:
         """Get the animation of this object
 
         Args:
@@ -369,14 +377,13 @@ class Sprite(GameObject):
             duration = duration,
             fps = fps,
         )
-    
+
     def saveGIF(
         this,
-        filename : str = None,
-        duration : int = 0,
-        fps : float = 0,
+        filename: str = None,
+        duration: int = 0,
+        fps: float = 0,
     ):
-        
         """Save current animation as a gif.
 
         Args:
@@ -389,7 +396,7 @@ class Sprite(GameObject):
         """
         if filename in ['', None]:
             filename = f'{os.path.splitext(os.path.basename(this.filename))[0]}-{this.animation.name}.gif'
-        
+
         this.animation.saveGIF(
             filename = filename,
             duration = duration,
@@ -410,16 +417,16 @@ class Sprite(GameObject):
         TEMPLATE = """<Animation>
 </Animation>
 """
-        
+
         def __init__(
             this,
-            xml : str | etree.ElementBase = None,
+            xml: str | etree.ElementBase = None,
             filesystem: Filesystem | Folder = None,
             gamepath: str = None,
             assets: str = '/assets',
             baseassets: str = '/',
-            HD : bool = False,
-            TabHD : bool = False,
+            HD: bool = False,
+            TabHD: bool = False,
         ) -> None:
             """Animation for Sprite.
 
@@ -433,29 +440,28 @@ class Sprite(GameObject):
                 TabHD (bool, optional): Use TabHD images. Defaults to False.
             """
             super().__init__(filesystem, gamepath, assets, baseassets)
-            
+
             if isinstance(xml, str):
-                this.xml : etree.ElementBase = etree.XML(xml).getroot()
+                this.xml: etree.ElementBase = etree.XML(xml).getroot()
             elif isinstance(xml, etree._Element):
                 this.xml = xml
             elif xml == None:
                 this.xml = etree.XML(this.TEMPLATE)
-            
+
             this.HD = HD
             this.TabHD = TabHD
-            
+
             this.properties = {}
-            
+
             this._PhotoImage = None
-            
-            this.frames : list[Sprite.Animation.Frame] = []
+
+            this.frames: list[Sprite.Animation.Frame] = []
             this.frame = 0
-            
+
             this.readXML()
-            
+
             this.SAFE_MODE = False
-        
-        
+
         @property
         def SAFE_MODE(this) -> bool:
             """A "safe mode" where you can modify the properties without them being added to the output xml.
@@ -465,25 +471,26 @@ class Sprite(GameObject):
             """
             if not hasattr(this, '_SAFE_MODE'):
                 this._SAFE_MODE = False
-            
+
             return this._SAFE_MODE
+
         @SAFE_MODE.setter
-        def SAFE_MODE(this, mode : bool):
+        def SAFE_MODE(this, mode: bool):
             if not isinstance(mode, bool):
                 raise TypeError('mode must be True or False')
-            
+
             if mode:
                 if not this.SAFE_MODE:
                     this._properties = deepcopy(this.properties)
             else:
                 if this.SAFE_MODE:
                     this.properties = deepcopy(this._properties)
-            
+
             for frame in this.frames:
                 frame.SAFE_MODE = mode
-            
+
             this._SAFE_MODE = mode
-        
+
         @property
         def image(this) -> Image.Image:
             """Current Animation image
@@ -491,9 +498,9 @@ class Sprite(GameObject):
             Returns:
                 PIL.Image.Image: PIL Image
             """
-            
+
             return this.frames[this.frame].image
-        
+
         @property
         def frame(this) -> int:
             """Current animation frame.
@@ -502,13 +509,14 @@ class Sprite(GameObject):
                 int: Current animation frame index.
             """
             return this._frame
+
         @frame.setter
-        def frame(this, value : int):
+        def frame(this, value: int):
             if len(this.frames) > 0:
                 this._frame = int(value) % len(this.frames)
             else:
                 this._frame = 0
-        
+
         @property
         def PhotoImage(this) -> 'ImageTk.PhotoImage':
             """Tkinter PhotoImage for the Animation
@@ -517,21 +525,20 @@ class Sprite(GameObject):
                 this._PhotoImage = ImageTk.PhotoImage(this.image)
             else:
                 this._PhotoImage = this.image.copy()
-            
+
             return this._PhotoImage
-            
+
         def readXML(this):
             """Read the xml for this Animation
             """
             this.getAttributes()
             this.getFrames()
-        
+
         def getAttributes(this):
             """Get all the attributes of this Animation
             """
             this.properties = this.xml.attrib
-            
-        
+
         @property
         def name(this) -> str:
             """Name of this animation.
@@ -543,13 +550,14 @@ class Sprite(GameObject):
                 return this.properties['name']
             else:
                 return ''
+
         @name.setter
-        def name(this, value : str):
+        def name(this, value: str):
             if not isinstance(value, str):
                 raise TypeError('name must be str')
-            
+
             this.properties['name'] = value
-        
+
         @property
         def textureBasePath(this) -> str:
             """The textureBasePath where all textures are stored.
@@ -562,18 +570,21 @@ class Sprite(GameObject):
             else:
                 if this.filesystem == None:
                     return '/Textures/'
-                
-                this.textureBasePath = path.joinPath(this.filesystem.baseassets, '/Textures/')
+
+                this.textureBasePath = path.joinPath(
+                    this.filesystem.baseassets, '/Textures/'
+                )
                 return this.textureBasePath
+
         @textureBasePath.setter
         def textureBasePath(this, path):
             if isinstance(path, Folder):
                 path = path.path
             if not isinstance(path, str):
                 raise TypeError('path must be str')
-            
+
             this.properties['textureBasePath'] = path
-        
+
         @property
         def atlasPath(this) -> str:
             """The path to the atlas.
@@ -585,16 +596,17 @@ class Sprite(GameObject):
                 return this.properties['atlas']
             else:
                 return None
+
         @atlasPath.setter
         def atlasPath(this, path):
             this.atlas = path
-        
+
         @property
         def atlas(this) -> Imagelist:
             if hasattr(this, '_atlas') and isinstance(this._atlas, Imagelist):
                 this.properties['atlas'] = this._atlas.filename
                 return this._atlas
-            
+
             if 'atlas' in this.properties:
                 this._atlas = Imagelist(
                     this.filesystem.get(this.properties['atlas']),
@@ -604,8 +616,9 @@ class Sprite(GameObject):
                 )
             else:
                 this._atlas = None
-            
+
             return this._atlas
+
         @atlas.setter
         def atlas(this, path):
             if isinstance(path, str):
@@ -619,7 +632,7 @@ class Sprite(GameObject):
                 this._atlas = path
             else:
                 raise TypeError('atlas must be str or Imagelist')
-        
+
         @property
         def texture(this) -> Texture:
             """The texture for this animation. Sometimes used instead of an atlas.
@@ -630,7 +643,7 @@ class Sprite(GameObject):
             if hasattr(this, '_texture') and isinstance(this._texture, Texture):
                 this.properties['texture'] = this._texture.filename
                 return this._texture
-            
+
             if 'texture' in this.properties:
                 this._texture = Texture(
                     this.properties['texture'],
@@ -641,11 +654,12 @@ class Sprite(GameObject):
                     HD = this.HD,
                     TabHD = this.TabHD,
                 )
-                
+
             else:
                 this._texture = None
 
             return this._texture
+
         @texture.setter
         def texture(this, path):
             if isinstance(path, str):
@@ -657,9 +671,7 @@ class Sprite(GameObject):
                 this._texture = path
             else:
                 raise TypeError('texture must be a path, File, or Texture object')
-            
-                
-        
+
         @property
         def playbackMode(this) -> str:
             """The playback mode.
@@ -671,29 +683,31 @@ class Sprite(GameObject):
                 return this.properties['playbackMode']
             else:
                 return 'ONCE'
+
         @playbackMode.setter
         def playbackMode(this, mode):
             if not isinstance(mode, str):
                 raise TypeError('playbackMode must be str')
-        
+
         @property
         def loopCount(this) -> int:
             """The loopCount for this Animation.
             
             Returns:
                 int: The loopCount.
-            """        
+            """
             if 'loopCount' in this.properties:
                 return int(this.properties['loopCount'])
             else:
                 return 0
+
         @loopCount.setter
         def loopCount(this, count):
             if not isinstance(count, (str, int, float)):
                 raise TypeError('loopCount must be str or int')
-            
+
             this.properties['loopCount'] = str(count)
-            
+
         def getFrames(this) -> list['Sprite.Animation.Frame']:
             """Get a list of all the Animation `Frame`s
 
@@ -701,41 +715,44 @@ class Sprite(GameObject):
                 list[Sprite.Animation.Frame]: List of all the Frames in this Animation.
             """
             this.frames = []
-            
+
             if this.xml == None:
                 return None
             for f in this.xml:
                 if (not f is etree.Comment) and f.tag == 'Frame':
-                    this.frames.append(this.Frame(
-                        f.attrib,
-                        this.atlas if this.atlas != None else this.texture,
-                        this.textureBasePath,
-                        filesystem = this.filesystem,
-                        gamepath = this.gamepath,
-                        assets = this.assets,
-                        baseassets = this.baseassets,
-                    ))
-            
+                    this.frames.append(
+                        this.Frame(
+                            f.attrib,
+                            this.atlas if this.atlas != None else this.texture,
+                            this.textureBasePath,
+                            filesystem = this.filesystem,
+                            gamepath = this.gamepath,
+                            assets = this.assets,
+                            baseassets = this.baseassets,
+                        )
+                    )
+
             return this.frames
 
         def updateProperties(this):
             """Update the Sprite properties
             """
-            def updateProperty(property : str, value, default = None):
+
+            def updateProperty(property: str, value, default = None):
                 if default != None and value == default:
                     if property in this.properties:
                         del this.properties[property]
                 else:
                     this.properties[property] = value
-            
+
             updateProperty('name', this.name)
             updateProperty('textureBasePath', this.textureBasePath)
-            this.atlas.export(this.atlasPath, exportImage=True)
+            this.atlas.export(this.atlasPath, exportImage = True)
             updateProperty('atlas', this.atlasPath)
             updateProperty('fps', str(this.fps))
             updateProperty('playbackMode', this.playbackMode)
             updateProperty('loopCount', str(this.loopCount))
-        
+
         def getXML(this):
             """Get the XML of this Animation
 
@@ -743,14 +760,14 @@ class Sprite(GameObject):
                 etree.Element: etree Element
             """
             this.updateProperties()
-            xml : etree.ElementBase = etree.Element('Animation', **this.properties)
-            
+            xml: etree.ElementBase = etree.Element('Animation', **this.properties)
+
             for frame in this.frames:
                 xml.append(frame.getXML())
-            
+
             this.xml = xml
             return this.xml
-        
+
         @property
         def fps(this) -> float:
             """The Animation fps.
@@ -763,24 +780,20 @@ class Sprite(GameObject):
             else:
                 this.fps = 30
                 return this.fps
+
         @fps.setter
-        def fps(this, value : int | float | str):
+        def fps(this, value: int | float | str):
             this.properties['fps'] = str(value)
-        
+
         def getAnimation(
             this,
-            duration : int = 0,
-            fps : float = 0,
-        ) -> dict[
-            typing.Literal[
-                'fps',
-                'frame_duration',
-                'frames',
-            ],
-            float |
-            int |
-            list[Image.Image]
-        ]:
+            duration: int = 0,
+            fps: float = 0,
+        ) -> dict[typing.Literal[
+            'fps',
+            'frame_duration',
+            'frames',
+        ], float | int | list[Image.Image]]:
             """Get the animation of this object
 
             Args:
@@ -792,53 +805,53 @@ class Sprite(GameObject):
             """
             if not isinstance(fps, (int, float)) and not fps == None:
                 raise TypeError('fps must be an int or float')
-            
+
             if not isinstance(duration, (int, float)) and not duration == None:
                 raise TypeError('duration must be an int or float')
-            
+
             if (fps in [0, None]) or (fps <= 0):
                 fps = this.fps
-            
-            frames : list[Image.Image] = []
+
+            frames: list[Image.Image] = []
             this.frame = 0
             frame = 0
             time = 0
-            
+
             def check():
                 if duration > 0:
                     return time <= duration
-                
+
                 if (time <= 0) or (frame <= 1):
                     return True
                 if this.frame == 0:
                     return False
-                
+
                 return True
-                
+
                 # print(f'test = {( not ((time > 0) and (duration <= 0) and ((sum([sprite.frame for sprite in this.sprites]) == 0))))}')
                 # print(f'time check = {((time <= duration) and (duration > 0))}')
-            
+
             while check():
                 this.frame += (frame) % ((fps / this.fps) + 1)
-                
+
                 frames.append(this.image)
-                
+
                 frame += 1
                 time += (1000 / fps) / 1000
-            
+
             # frames = frames[:-1]
-            
+
             return {
                 'fps': fps,
-                'frame_duration' : (1000 / fps) / 1000,
-                'frames' : frames,
+                'frame_duration': (1000 / fps) / 1000,
+                'frames': frames,
             }
-        
+
         def saveGIF(
             this,
             filename = None,
-            duration : int = 0,
-            fps : float = 0,
+            duration: int = 0,
+            fps: float = 0,
         ) -> Image.Image:
             """Save animation as a gif.
 
@@ -853,18 +866,18 @@ class Sprite(GameObject):
             if filename == None:
                 filename = this.name
                 filename = os.path.splitext(filename)[0] + '.gif'
-            
+
             animation = this.getAnimation(
                 duration = duration,
                 fps = fps,
             )
-            
+
             return save_transparent_gif(
                 animation['frames'],
                 durations = animation['frame_duration'],
                 save_file = filename,
             )
-        
+
         # Frame
         class Frame(GameObject):
             """The Frame for Animations.
@@ -874,16 +887,16 @@ class Sprite(GameObject):
                 textureBasePath (str): The textureBasePath for this Frame.
                 properties (dict[str,str]): The frame properties.
             """
-            
+
             def __init__(
                 this,
-                properties : dict = {},
-                atlas : Imagelist = None,
-                textureBasePath : str = None,
-                filesystem : Filesystem | Folder = None,
-                gamepath : str = None,
-                assets : str = '/assets',
-                baseassets : str = '/',
+                properties: dict = {},
+                atlas: Imagelist = None,
+                textureBasePath: str = None,
+                filesystem: Filesystem | Folder = None,
+                gamepath: str = None,
+                assets: str = '/assets',
+                baseassets: str = '/',
             ) -> None:
                 """Frame for Sprite.Animation.
 
@@ -897,18 +910,17 @@ class Sprite(GameObject):
                     baseassets (str, optional): Base assets path within the assets folder, e.g. `/perry/` in wmp. Defaults to `
                 """
                 super().__init__(filesystem, gamepath, assets, baseassets)
-                
+
                 this.atlas = atlas
                 this.textureBasePath = textureBasePath
                 this.properties = properties
-                
-                this.color_filter : tuple[int,int,int,int] = []
-                
+
+                this.color_filter: tuple[int, int, int, int] = []
+
                 this.getImage()
-                
+
                 this.SAFE_MODE = False
-            
-            
+
             @property
             def SAFE_MODE(this) -> bool:
                 """A "safe mode" where you can modify the properties without them being added to the output xml.
@@ -918,13 +930,14 @@ class Sprite(GameObject):
                 """
                 if not hasattr(this, '_SAFE_MODE'):
                     this._SAFE_MODE = False
-                
+
                 return this._SAFE_MODE
+
             @SAFE_MODE.setter
-            def SAFE_MODE(this, mode : bool):
+            def SAFE_MODE(this, mode: bool):
                 if not isinstance(mode, bool):
                     raise TypeError('mode must be True or False')
-                
+
                 if mode:
                     if not this.SAFE_MODE:
                         this._properties = deepcopy(this.properties)
@@ -933,9 +946,9 @@ class Sprite(GameObject):
                     if this.SAFE_MODE:
                         this.properties = deepcopy(this._properties)
                         this.color_filter = deepcopy(this._color_filters)
-                
+
                 this._SAFE_MODE = mode
-            
+
             @property
             def name(this) -> str:
                 """The name of this frame.
@@ -947,12 +960,13 @@ class Sprite(GameObject):
                     return this.properties['name']
                 else:
                     return ''
+
             @name.setter
-            def name(this, name : str):
+            def name(this, name: str):
                 this.properties['name'] = str(name)
-            
+
             @property
-            def offset(this) -> tuple[float,float]:
+            def offset(this) -> tuple[float, float]:
                 """The frame offset.
 
                 Returns:
@@ -961,9 +975,10 @@ class Sprite(GameObject):
                 if 'offset' in this.properties:
                     return tuple([float(x) for x in this.properties['offset'].split()])
                 else:
-                    return (0,0)
+                    return (0, 0)
+
             @offset.setter
-            def offset(this, offset : tuple[float,float]):
+            def offset(this, offset: tuple[float, float]):
                 if isinstance(offset, (tuple, list)):
                     this.properties['offset'] = ' '.join([str(x) for x in offset])
                 elif isinstance(offset, (int, float)):
@@ -972,7 +987,7 @@ class Sprite(GameObject):
                     this.properties['offset'] = offset
                 else:
                     raise TypeError('offset must be tuple, float or str')
-            
+
             @property
             def scale(this) -> tuple[float, float]:
                 """The frame scale.
@@ -984,8 +999,9 @@ class Sprite(GameObject):
                     return tuple([float(x) for x in this.properties['scale'].split()])
                 else:
                     return (1, 1)
+
             @scale.setter
-            def scale(this, scale : tuple[float,float]):
+            def scale(this, scale: tuple[float, float]):
                 if isinstance(scale, (tuple, list)):
                     this.properties['scale'] = ' '.join([str(x) for x in scale])
                 elif isinstance(scale, (int, float)):
@@ -994,7 +1010,7 @@ class Sprite(GameObject):
                     this.properties['scale'] = scale
                 else:
                     raise TypeError('scale must be tuple, float or str')
-            
+
             @property
             def angleDeg(this) -> float:
                 """The frame rotation angle.
@@ -1006,13 +1022,14 @@ class Sprite(GameObject):
                     return float(this.properties['angleDeg'])
                 else:
                     return 0
+
             @angleDeg.setter
-            def angleDeg(this, angle : float):
+            def angleDeg(this, angle: float):
                 if isinstance(angle, (int, float, str)):
                     this.properties['angleDeg'] = str(angle)
                 else:
                     raise TypeError('angle must be float')
-            
+
             @property
             def repeat(this) -> int:
                 """The amount of times to repeat this frame in the animation.
@@ -1024,13 +1041,14 @@ class Sprite(GameObject):
                     this.repeat = int(this.properties['repeat'])
                 else:
                     return 0
+
             @repeat.setter
-            def repeat(this, num : int):
+            def repeat(this, num: int):
                 if isinstance(num, (int, float, str)):
                     this.properties['angleDeg'] = str(int(float(num)))
                 else:
                     raise TypeError('angle must be int')
-                
+
             def getImage(this):
                 """Get the image. The image is stored in Frame._image.
                 """
@@ -1038,8 +1056,7 @@ class Sprite(GameObject):
                     this._image = this.atlas.get(this.name)
                 elif this.texture != None:
                     this._image = this.texture
-                
-            
+
             @property
             def texture(this) -> Texture:
                 """The frame Texture instead of atlas.
@@ -1051,8 +1068,7 @@ class Sprite(GameObject):
                     return this.atlas
                 else:
                     return None
-            
-            
+
             @property
             def image(this) -> Image.Image:
                 """Image of this Image
@@ -1061,23 +1077,28 @@ class Sprite(GameObject):
                     PIL.Image.Image: PIL Image
                 """
                 this.getImage()
-                
+
                 if hasattr(this._image, 'image'):
                     image = this._image.image.copy()
                 elif isinstance(this._image, Image.Image):
                     image = this._image.copy()
                 else:
-                    image = Image.new('RGBA', (1,1), (0,0,0,0))
-                
+                    image = Image.new('RGBA', (1, 1), (0, 0, 0, 0))
+
                 # Validate scale before resize to prevent negative dimensions
                 scale_array = numpy.array(this.scale)
                 if scale_array[0] <= 0 or scale_array[1] <= 0:
                     # Use original image if scale has negative/zero values
-                    image = this._image.image.copy() if hasattr(this._image, 'image') else this._image.copy()
+                    image = this._image.image.copy(
+                    ) if hasattr(this._image, 'image') else this._image.copy()
                 else:
-                    image = image.resize(tuple([round(_) for _ in (numpy.array(image.size) * scale_array)]))
+                    image = image.resize(
+                        tuple([
+                            round(_) for _ in (numpy.array(image.size) * scale_array)
+                        ])
+                    )
                 image = image.rotate(this.angleDeg, expand = True)
-                
+
                 # for color in this.color_filters:
                 # if len(this.color_filter) >= 3:
                 #     try:
@@ -1087,12 +1108,12 @@ class Sprite(GameObject):
                 #         )
                 #     except:
                 #         pass
-                    # image.show()
-                
-                
+                # image.show()
+
                 return image
+
             @image.setter
-            def image(this, image : str):
+            def image(this, image: str):
                 if isinstance(image, Texture):
                     this.atlas = image
                 elif isinstance(this.atlas, Texture):
@@ -1109,45 +1130,35 @@ class Sprite(GameObject):
                 elif isinstance(this.atlas, Imagelist):
                     if isinstance(image, str):
                         this.name = image
-                
+
                 this.getImage()
-                
-            
+
             def updateProperties(this):
                 """Update Image properties
                 """
-                def updateProperty(property : str, value, default):
+
+                def updateProperty(property: str, value, default):
                     if value == default:
                         if property in this.properties:
                             del this.properties[property]
                     else:
                         this.properties[property] = value
-                
+
                 this.properties['name'] = this.name
-                
+
                 updateProperty(
-                    'offset',
-                    ' '.join([str(_) for _ in this.offset]),
+                    'offset', ' '.join([str(_) for _ in this.offset]),
                     ' '.join([str(_) for _ in this._offset])
                 )
-                
+
                 updateProperty(
-                    'scale',
-                    ' '.join([str(_) for _ in this.scale]),
+                    'scale', ' '.join([str(_) for _ in this.scale]),
                     ' '.join([str(_) for _ in this._scale])
                 )
-                
-                updateProperty(
-                    'angleDeg',
-                    str(this.angleDeg),
-                    str(this._angleDeg)
-                )
-                
-                updateProperty(
-                    'repeat',
-                    str(this.repeat),
-                    str(this._repeat)
-                )
+
+                updateProperty('angleDeg', str(this.angleDeg), str(this._angleDeg))
+
+                updateProperty('repeat', str(this.repeat), str(this._repeat))
 
             def getXML(this) -> etree.ElementBase:
                 """Get the XML for the Frame
@@ -1157,7 +1168,7 @@ class Sprite(GameObject):
                 """
                 this.updateProperties()
                 return etree.Element('Frame', **this.properties)
-            
+
             def show(this, *args, **kwargs):
                 """Calls the PIL.Image.Image.show() method.
                 

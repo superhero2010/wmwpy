@@ -14,11 +14,11 @@ if LOADED_ImageTk:
     except:
         LOADED_ImageTk = False
 
-
 from ..utils.filesystem import *
 from .object import Object
 from ..gameobject import GameObject
 from .objectpack.pack import ObjectPack
+
 
 class Level(GameObject):
     """
@@ -38,22 +38,22 @@ class Level(GameObject):
     </Objects>
     """
 
-    IMAGE_TEMPLATE = Image.new('P', (90,127), 'white').quantize(colors=256)
+    IMAGE_TEMPLATE = Image.new('P', (90, 127), 'white').quantize(colors = 256)
     IMAGE_FORMAT = 'PNG'
 
     def __init__(
         this,
-        xml : str | bytes | File = None,
-        image : str | bytes | File = None,
-        filesystem : Filesystem | Folder = None,
-        gamepath : str = None,
-        assets : str = '/assets',
-        baseassets : str = '/',
-        load_callback : typing.Callable[[int, str, int], typing.Any] = None,
-        ignore_errors : bool = False,
-        HD : bool = False,
-        TabHD : bool = False,
-        object_pack : ObjectPack = None
+        xml: str | bytes | File = None,
+        image: str | bytes | File = None,
+        filesystem: Filesystem | Folder = None,
+        gamepath: str = None,
+        assets: str = '/assets',
+        baseassets: str = '/',
+        load_callback: typing.Callable[[int, str, int], typing.Any] = None,
+        ignore_errors: bool = False,
+        HD: bool = False,
+        TabHD: bool = False,
+        object_pack: ObjectPack = None
     ) -> None:
         """Load level
 
@@ -107,17 +107,17 @@ class Level(GameObject):
 
         this.object_pack = object_pack
 
-        this.objects : list[Object] = []
-        this.properties : dict[str,str] = {}
-        this.challenges : list[Level.Challenge] = []
-        this.room = (0,0)
+        this.objects: list[Object] = []
+        this.properties: dict[str, str] = {}
+        this.challenges: list[Level.Challenge] = []
+        this.room = (0, 0)
 
         this.read(load_callback = load_callback, ignore_errors = ignore_errors)
 
         this.scale = 5
 
     @property
-    def size(this) -> tuple[int,int]:
+    def size(this) -> tuple[int, int]:
         """Level image size
 
         Returns:
@@ -142,7 +142,7 @@ class Level(GameObject):
         return image
 
     @image.setter
-    def image(this, value : Image.Image):
+    def image(this, value: Image.Image):
         this._image = value
 
     @property
@@ -164,8 +164,9 @@ class Level(GameObject):
         """Level size scale
         """
         return this._scale
+
     @scale.setter
-    def scale(this, value : int):
+    def scale(this, value: int):
         this._scale = value
 
         for obj in this.objects:
@@ -173,12 +174,12 @@ class Level(GameObject):
 
     def read(
         this,
-        load_callback : typing.Callable[[int, str, int], typing.Any] = None,
-        ignore_errors : bool = False,
+        load_callback: typing.Callable[[int, str, int], typing.Any] = None,
+        ignore_errors: bool = False,
     ):
         """Read level XML
         """
-        this.objects : list[Object] = []
+        this.objects: list[Object] = []
         this.properties = {}
 
         def run_callback(index, name, max):
@@ -195,7 +196,7 @@ class Level(GameObject):
         index = 0
 
         for element in this.xml:
-            element : etree.ElementBase
+            element: etree.ElementBase
 
             try:
 
@@ -206,7 +207,7 @@ class Level(GameObject):
 
                 if element.tag == 'Object':
                     properties = {}
-                    pos = (0,0)
+                    pos = (0, 0)
                     name = element.get('name')
 
                     run_callback(index, f'Object: {name}', max)
@@ -219,11 +220,14 @@ class Level(GameObject):
                             elif el.tag == 'Properties':
                                 for property in el:
                                     if not property is etree.Comment and property.tag == 'Property':
-                                        properties[property.get('name')] = property.get('value')
+                                        properties[property.get('name')
+                                                   ] = property.get('value')
 
                     if 'Filename' in properties:
                         obj = Object(
-                            this.filesystem.get(properties['Filename']), # get file because `Object` does not take filepath
+                            this.filesystem.get(
+                                properties['Filename']
+                            ),  # get file because `Object` does not take filepath
                             filesystem = this.filesystem,
                             properties = properties,
                             pos = pos,
@@ -257,16 +261,17 @@ class Level(GameObject):
                             continue
 
                         if el.tag == 'AbsoluteLocation':
-                            this.room = tuple([float(_) for _ in el.get('value').split()])
+                            this.room = tuple([
+                                float(_) for _ in el.get('value').split()
+                            ])
                 elif element.tag == 'Challenges':
                     for challenge in element:
-                        challenge : etree.ElementBase
+                        challenge: etree.ElementBase
                         if challenge is etree.Comment:
                             continue
 
                         if challenge.tag == 'Challenge':
                             this.challenges.append(this.Challenge(challenge))
-
 
                 elif callable(load_callback):
                     run_callback(index, element.tag, max)
@@ -282,9 +287,9 @@ class Level(GameObject):
 
     def export(
         this,
-        filename : str = None,
-        exportObjects : bool = False,
-        saveImage : bool = True,
+        filename: str = None,
+        exportObjects: bool = False,
+        saveImage: bool = True,
     ) -> bytes:
         """Export level
 
@@ -304,7 +309,7 @@ class Level(GameObject):
         else:
             this.filename = filename
 
-        xml : etree.ElementBase = etree.Element('Objects')
+        xml: etree.ElementBase = etree.Element('Objects')
         for object in this.objects:
             if exportObjects:
                 object.export()
@@ -312,7 +317,9 @@ class Level(GameObject):
             xml.append(object.getLevelXML())
 
         room = etree.Element('Room')
-        etree.SubElement(room, 'AbsoluteLocation', value = ' '.join([str(_) for _ in this.room]))
+        etree.SubElement(
+            room, 'AbsoluteLocation', value = ' '.join([str(_) for _ in this.room])
+        )
 
         properties = etree.Element('Properties')
         for name in this.properties:
@@ -322,7 +329,7 @@ class Level(GameObject):
         if len(properties):
             xml.append(properties)
 
-        challenges : etree._Element = etree.Element('Challenges')
+        challenges: etree._Element = etree.Element('Challenges')
 
         for challenge in this.challenges:
             challenges.append(challenge.getXML())
@@ -332,7 +339,9 @@ class Level(GameObject):
 
         this.xml = xml
 
-        output = etree.tostring(xml, pretty_print=True, xml_declaration=True, encoding='utf-8')
+        output = etree.tostring(
+            xml, pretty_print = True, xml_declaration = True, encoding = 'utf-8'
+        )
 
         if (file := this.filesystem.get(filename)) != None:
             if isinstance(file, File):
@@ -365,10 +374,10 @@ class Level(GameObject):
 
     def addObject(
         this,
-        filename : str | Object,
-        properties : dict = {},
-        pos : tuple[float,float] = (0,0),
-        name : str = 'Obj'
+        filename: str | Object,
+        properties: dict = {},
+        pos: tuple[float, float] = (0, 0),
+        name: str = 'Obj'
     ):
         """Add object to level.
 
@@ -415,7 +424,7 @@ class Level(GameObject):
 
         return obj
 
-    def getObjectById(this, id : int) -> Object:
+    def getObjectById(this, id: int) -> Object:
         """Get an Object by it's id
 
         Args:
@@ -428,13 +437,13 @@ class Level(GameObject):
             id = int(float(id))
         except:
             return
-        
+
         for obj in this.objects:
             if obj.id == id:
                 return obj
         return None
 
-    def getObject(this, name : str):
+    def getObject(this, name: str):
         """
         Get object by name
 
@@ -447,11 +456,12 @@ class Level(GameObject):
                 return obj
 
     class Challenge():
+
         def __init__(
             this,
-            xml : etree.ElementBase = None,
-            id : str = '',
-            requirements : dict[str, dict[str, str]] = {},
+            xml: etree.ElementBase = None,
+            id: str = '',
+            requirements: dict[str, dict[str, str]] = {},
         ) -> None:
             """A level challenge used in wmw2
 
@@ -478,7 +488,7 @@ class Level(GameObject):
             """
             this.xml = xml
             this.id = id
-            this.requirements : dict[str, dict[str, str]] = copy.deepcopy(requirements)
+            this.requirements: dict[str, dict[str, str]] = copy.deepcopy(requirements)
 
             if isinstance(this.xml, etree._Element):
                 this.readXML()
@@ -493,7 +503,7 @@ class Level(GameObject):
 
             for element in this.xml:
                 # so I can access the attributes in vscode
-                element : etree.ElementBase
+                element: etree.ElementBase
 
                 if element is etree.Comment:
                     continue
@@ -508,7 +518,7 @@ class Level(GameObject):
             Returns:
                 lxml.etree.Element: lxml etree Element.
             """
-            root : etree._Element = etree.Element('Challenge', id = this.id)
+            root: etree._Element = etree.Element('Challenge', id = this.id)
 
             for name in this.requirements:
                 requirement = this.requirements[name]
@@ -518,4 +528,3 @@ class Level(GameObject):
             this.xml = root
 
             return root
-

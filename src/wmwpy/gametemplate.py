@@ -3,6 +3,7 @@ from copy import deepcopy
 
 from .game import Game
 
+
 # Where's My Water?
 class WMW(Game):
     _DB = '/Data/water.db'
@@ -103,9 +104,9 @@ class WMW(Game):
             'type': 'fluid',
         }
     }
-    
+
     game = 'WMW'
-    
+
     def __init__(
         this,
         gamepath: str,
@@ -115,15 +116,22 @@ class WMW(Game):
         baseassets: str = '/',
         load_callback: typing.Callable[[int, str, int], typing.Any] = None
     ) -> None:
-        
-        
-        super().__init__(gamepath = gamepath, assets = assets, db = db, profile = profile, baseassets = baseassets, load_callback = load_callback)
+
+        super().__init__(
+            gamepath = gamepath,
+            assets = assets,
+            db = db,
+            profile = profile,
+            baseassets = baseassets,
+            load_callback = load_callback
+        )
+
 
 class WMWF(WMW):
     _DB = '/Data/water-Lite.db'
-    
+
     game = 'WMWF'
-    
+
     def __init__(
         this,
         gamepath: str,
@@ -133,7 +141,15 @@ class WMWF(WMW):
         baseassets: str = '/',
         load_callback: typing.Callable[[int, str, int], typing.Any] = None
     ) -> None:
-        super().__init__(gamepath = gamepath, assets = assets, db = db, profile = profile, baseassets = baseassets, load_callback = load_callback)
+        super().__init__(
+            gamepath = gamepath,
+            assets = assets,
+            db = db,
+            profile = profile,
+            baseassets = baseassets,
+            load_callback = load_callback
+        )
+
 
 # Where's My Perry?
 class WMP(Game):
@@ -150,7 +166,7 @@ class WMP(Game):
             'type': 'solid',
             'image': '/Perry/Texture/materials_dirt.pvr',
             'outlined': True,
-            'outline_color': (255,255,255),
+            'outline_color': (255, 255, 255),
             'outline_thickness': 2,
         },
         "stone": {
@@ -158,7 +174,7 @@ class WMP(Game):
             'type': 'solid',
             'image': '/Perry/Textures/materials_stone_small.pvr',
             'outlined': True,
-            'outline_color': (255,255,255),
+            'outline_color': (255, 255, 255),
             'outline_thickness': 2,
         },
         "ice": {
@@ -166,7 +182,7 @@ class WMP(Game):
             'type': 'solid',
             'image': '/Perry/Textures/materials_ice.pvr',
             'outlined': True,
-            'outline_color': (255,255,255),
+            'outline_color': (255, 255, 255),
             'outline_thickness': 2,
         },
         "water": {
@@ -190,9 +206,9 @@ class WMP(Game):
             'type': 'particle',
         },
     }
-    
+
     game = 'WMP'
-    
+
     def __init__(
         this,
         gamepath: str,
@@ -202,13 +218,21 @@ class WMP(Game):
         baseassets: str = '/Perry/',
         load_callback: typing.Callable[[int, str, int], typing.Any] = None
     ) -> None:
-        super().__init__(gamepath = gamepath, assets = assets, db = db, profile = profile, baseassets = baseassets, load_callback = load_callback)
+        super().__init__(
+            gamepath = gamepath,
+            assets = assets,
+            db = db,
+            profile = profile,
+            baseassets = baseassets,
+            load_callback = load_callback
+        )
+
 
 class WMPF(WMP):
     _DB = '/Perry/Data/perry-Lite.db'
-    
+
     game = 'WMPF'
-    
+
     def __init__(
         this,
         gamepath: str,
@@ -218,7 +242,15 @@ class WMPF(WMP):
         baseassets: str = '/Perry/',
         load_callback: typing.Callable[[int, str, int], typing.Any] = None
     ) -> None:
-        super().__init__(gamepath = gamepath, assets = assets, db = db, profile = profile, baseassets = baseassets, load_callback = load_callback)
+        super().__init__(
+            gamepath = gamepath,
+            assets = assets,
+            db = db,
+            profile = profile,
+            baseassets = baseassets,
+            load_callback = load_callback
+        )
+
 
 # Where's My Mickey?
 class WMM(Game):
@@ -281,9 +313,9 @@ class WMM(Game):
             'type': 'particle',
         },
     }
-    
+
     game = 'WMM'
-    
+
     def __init__(
         this,
         gamepath: str,
@@ -293,13 +325,21 @@ class WMM(Game):
         baseassets: str = '/Mickey/',
         load_callback: typing.Callable[[int, str, int], typing.Any] = None
     ) -> None:
-        super().__init__(gamepath = gamepath, assets = assets, db = db, profile = profile, baseassets = baseassets, load_callback = load_callback)
+        super().__init__(
+            gamepath = gamepath,
+            assets = assets,
+            db = db,
+            profile = profile,
+            baseassets = baseassets,
+            load_callback = load_callback
+        )
+
 
 class WMMF(WMM):
     _DB = '/Mickey/Data/perry-Lite.db'
-    
+
     game = 'WMMF'
-    
+
     def __init__(
         this,
         gamepath: str,
@@ -309,7 +349,15 @@ class WMMF(WMM):
         baseassets: str = '/Mickey/',
         load_callback: typing.Callable[[int, str, int], typing.Any] = None
     ) -> None:
-        super().__init__(gamepath = gamepath, assets = assets, db = db, profile = profile, baseassets = baseassets, load_callback = load_callback)
+        super().__init__(
+            gamepath = gamepath,
+            assets = assets,
+            db = db,
+            profile = profile,
+            baseassets = baseassets,
+            load_callback = load_callback
+        )
+
 
 # Where's My XiYangYang?
 class WMXYY(Game):
@@ -345,30 +393,15 @@ class WMXYY(Game):
             'outline_color': '/Perry/Textures/material_outline_wood.webp',
             'outline_thickness': 2,
         },
-        "water": {
-            'rgb': (43, 33, 254),
-            'type': 'particle'
-        },
-        "poison_water": {
-            'rgb': (80, 0, 71),
-            'type': 'particle'
-        },
-        "oil": {
-            'rgb': (163, 74, 5),
-            'type': 'particle'
-        },
-        "hot_oil": {
-            'rgb': (208, 8, 11),
-            'type': 'particle'
-        },
-        "vines": {
-            'rgb': (38, 139, 38),
-            'type': 'particle'
-        },
+        "water": {'rgb': (43, 33, 254), 'type': 'particle'},
+        "poison_water": {'rgb': (80, 0, 71), 'type': 'particle'},
+        "oil": {'rgb': (163, 74, 5), 'type': 'particle'},
+        "hot_oil": {'rgb': (208, 8, 11), 'type': 'particle'},
+        "vines": {'rgb': (38, 139, 38), 'type': 'particle'},
     }
-    
+
     game = 'WMXYY'
-    
+
     def __init__(
         this,
         gamepath: str,
@@ -379,7 +412,15 @@ class WMXYY(Game):
         load_callback: typing.Callable[[int, str, int], typing.Any] = None,
         databasekey = None
     ) -> None:
-        super().__init__(gamepath = gamepath, assets = assets, db = db, profile = profile, baseassets = baseassets, load_callback = load_callback)
+        super().__init__(
+            gamepath = gamepath,
+            assets = assets,
+            db = db,
+            profile = profile,
+            baseassets = baseassets,
+            load_callback = load_callback
+        )
+
 
 class WMWFXYY(Game):
     _DB = '/Perry/Data/perry.db'
@@ -414,30 +455,15 @@ class WMWFXYY(Game):
             'outline_color': '/Perry/Textures/material_outline_wood.webp',
             'outline_thickness': 2,
         },
-        "water": {
-            'rgb': (43, 33, 254),
-            'type': 'particle'
-        },
-        "poison_water": {
-            'rgb': (80, 0, 71),
-            'type': 'particle'
-        },
-        "oil": {
-            'rgb': (163, 74, 5),
-            'type': 'particle'
-        },
-        "hot_oil": {
-            'rgb': (208, 8, 11),
-            'type': 'particle'
-        },
-        "vines": {
-            'rgb': (38, 139, 38),
-            'type': 'particle'
-        },
+        "water": {'rgb': (43, 33, 254), 'type': 'particle'},
+        "poison_water": {'rgb': (80, 0, 71), 'type': 'particle'},
+        "oil": {'rgb': (163, 74, 5), 'type': 'particle'},
+        "hot_oil": {'rgb': (208, 8, 11), 'type': 'particle'},
+        "vines": {'rgb': (38, 139, 38), 'type': 'particle'},
     }
-    
+
     game = 'WMWFXYY'
-    
+
     def __init__(
         this,
         gamepath: str,
@@ -448,7 +474,15 @@ class WMWFXYY(Game):
         load_callback: typing.Callable[[int, str, int], typing.Any] = None,
         databasekey = None
     ) -> None:
-        super().__init__(gamepath = gamepath, assets = assets, db = db, profile = profile, baseassets = baseassets, load_callback = load_callback)
+        super().__init__(
+            gamepath = gamepath,
+            assets = assets,
+            db = db,
+            profile = profile,
+            baseassets = baseassets,
+            load_callback = load_callback
+        )
+
 
 # Where's My Water 2?
 class WMW2(Game):
@@ -470,7 +504,7 @@ class WMW2(Game):
                 'allie': '/Water/Textures/WMW2_Pattern_Allie_Dirt.webp',
             },
             'outlined': True,
-            'outline_color': (255,255,255),
+            'outline_color': (255, 255, 255),
             'outline_thickness': 2,
         },
         "stone": {
@@ -482,7 +516,7 @@ class WMW2(Game):
                 'allie': '/Water/Textures/WMW2_Pattern_Allie_Rock.webp',
             },
             'outlined': True,
-            'outline_color': (255,255,255),
+            'outline_color': (255, 255, 255),
             'outline_thickness': 2,
         },
         "algae": {
@@ -510,9 +544,9 @@ class WMW2(Game):
             'type': 'particle',
         },
     }
-    
+
     game = 'WMW2'
-    
+
     def __init__(
         this,
         gamepath: str,
@@ -522,16 +556,24 @@ class WMW2(Game):
         baseassets: str = '/Water/',
         load_callback: typing.Callable[[int, str, int], typing.Any] = None
     ) -> None:
-        super().__init__(gamepath = gamepath, assets = assets, db = db, profile = profile, baseassets = baseassets, load_callback = load_callback)
+        super().__init__(
+            gamepath = gamepath,
+            assets = assets,
+            db = db,
+            profile = profile,
+            baseassets = baseassets,
+            load_callback = load_callback
+        )
+
 
 # Where's My Holiday?
 class WMH(Game):
     _DB = WMWF._DB
     _BASEASSETS = WMWF._BASEASSETS
     _LEVEL_MATERIALS = deepcopy(WMWF._LEVEL_MATERIALS)
-    
+
     game = 'WMH'
-    
+
     def __init__(
         this,
         gamepath: str,
@@ -541,21 +583,28 @@ class WMH(Game):
         baseassets: str = '/',
         load_callback: typing.Callable[[int, str, int], typing.Any] = None
     ) -> None:
-        super().__init__(gamepath = gamepath, assets = assets, db = db, profile = profile, baseassets = baseassets, load_callback = load_callback)
-    
-    def mode(this, mode : typing.Literal['wmw', 'wmp'] = 'wmw'):
+        super().__init__(
+            gamepath = gamepath,
+            assets = assets,
+            db = db,
+            profile = profile,
+            baseassets = baseassets,
+            load_callback = load_callback
+        )
+
+    def mode(this, mode: typing.Literal['wmw', 'wmp'] = 'wmw'):
         """Switch game mode from 'wmw' to 'wmp' and vice verca.
 
         Args:
             mode (str, optional): Mode. Can be 'wmw' or 'wmp'. Defaults to 'wmw'.
         """
-        
+
         mode = mode.lower()
         if mode == 'wmw':
             this._DB = WMWF._DB
             this._BASEASSETS = WMWF._BASEASSETS
             this._LEVEL_MATERIALS = deepcopy(WMWF._LEVEL_MATERIALS)
-            
+
             this.db = this._DB
             this.baseassets = this._BASEASSETS
             this.level_materials = deepcopy(this._LEVEL_MATERIALS)
@@ -563,16 +612,17 @@ class WMH(Game):
             this._DB = WMPF._DB
             this._BASEASSETS = WMPF._BASEASSETS
             this._LEVEL_MATERIALS = deepcopy(WMPF._LEVEL_MATERIALS)
-        
+
         this.db = this._DB
         this.baseassets = this._BASEASSETS
         this.level_materials = deepcopy(this._LEVEL_MATERIALS)
 
         this.filesystem.baseassets = this.baseassets
 
+
 class WMS(WMPF):
     game = 'WMS'
-    
+
     def __init__(
         this,
         gamepath: str,
@@ -582,11 +632,20 @@ class WMS(WMPF):
         baseassets: str = '/Perry/',
         load_callback: typing.Callable[[int, str, int], typing.Any] = None
     ) -> None:
-        super().__init__(gamepath = gamepath, assets = assets, db = db, profile = profile, baseassets = baseassets, load_callback = load_callback)
+        super().__init__(
+            gamepath = gamepath,
+            assets = assets,
+            db = db,
+            profile = profile,
+            baseassets = baseassets,
+            load_callback = load_callback
+        )
 
-GAMES : dict[str, Game] = {}
 
-def register_game(name : str, class_ : Game):
+GAMES: dict[str, Game] = {}
+
+
+def register_game(name: str, class_: Game):
     """Register a game template
 
     Args:
@@ -598,10 +657,10 @@ def register_game(name : str, class_ : Game):
         TypeError: name must be a string
         NameError: game already exists
     """
-    
+
     if not isinstance(class_, type):
         class_ = class_.__class__
-    
+
     if not issubclass(class_, Game):
         raise TypeError(f'class {name} has to be inherited by Game')
     if not isinstance(name, str):
@@ -613,6 +672,7 @@ def register_game(name : str, class_ : Game):
         pass
     GAMES[name] = class_
 
+
 register_game('WMW', WMW)
 register_game('WMWF', WMWF)
 register_game('WMP', WMP)
@@ -622,7 +682,7 @@ register_game('WMMXL', WMM)
 register_game('WMMF', WMMF)
 register_game('WMXYY', WMXYY)
 register_game('WMWFXYY', WMWFXYY)
-register_game('WMW2',WMW2)
-register_game('WMH',WMH)
-register_game('WMV',WMH)
-register_game('WMS',WMS)
+register_game('WMW2', WMW2)
+register_game('WMH', WMH)
+register_game('WMV', WMH)
+register_game('WMS', WMS)

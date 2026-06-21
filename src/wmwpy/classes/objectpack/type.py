@@ -112,15 +112,16 @@ class Type():
     ```
     
     """
-    
-    NAME : str = ''
-    PROPERTIES : dict[str, dict[typing.Literal['type', 'default', 'options'], str | list[str]]] = {}
-    
+
+    NAME: str = ''
+    PROPERTIES: dict[str, dict[typing.Literal['type', 'default', 'options'],
+                               str | list[str]]] = {}
+
     DEFAULT_PROPERTY = {
-        'type' : 'string',
-        'default' : '',
+        'type': 'string',
+        'default': '',
     }
-    
+
     VALUE_TYPES = [
         'string',
         'float',
@@ -129,7 +130,7 @@ class Type():
         'vector',
         'vector,...',
     ]
-    
+
     TYPE_ALIASES = {
         'file': 'string',
         'fluid': 'string',
@@ -141,16 +142,16 @@ class Type():
         'rgb': 'int int int',
         'rgba': 'int int int int',
     }
-    
-    def __init__(self, obj : 'Object' = None) -> None:
+
+    def __init__(self, obj: 'Object' = None) -> None:
         """Object Type class.
 
         Args:
             obj (Object, optional): The object to be modified in this Type. Defaults to None.
         """
         self.obj = obj
-    
-    def split_property_num(self, property) -> tuple[str,str]:
+
+    def split_property_num(self, property) -> tuple[str, str]:
         """Split a property name and number, such as, 'ConnectedSpout0' returns `('ConnectedSpout', '0')`.
 
         Args:
@@ -164,12 +165,12 @@ class Type():
         """
         if not isinstance(property, str):
             raise TypeError('property must be str')
-        
+
         head = property.rstrip('0123456789#')
         tail = property[len(head):]
         return head, tail
-    
-    def ready_sprites(self,):
+
+    def ready_sprites(self, ):
         """Get the sprites ready for generating the object image.
         
         In this method, you can modify any object or sprites properties to generate the correct image based on the object properties. There are also many methods that can be used to make the process easier.
@@ -217,11 +218,11 @@ class Type():
         
         """
         pass
-    
+
     def value(
         self,
-        value : str,
-        type : typing.Literal[
+        value: str,
+        type: typing.Literal[
             'string',
             'float',
             'int',
@@ -276,59 +277,62 @@ class Type():
         [[0.5,2.2],[-2.5,5.2]]
         ```
         """
-        def getint(value : str):
+
+        def getint(value: str):
             try:
                 return int(float(value))
             except:
                 return 0
-        
-        def getfloat(value : str):
+
+        def getfloat(value: str):
             try:
                 return float(value)
             except:
                 return 0.0
-        
-        types : dict[str, typing.Callable[[str], str | float | int]] = {
-            'string' : str,
-            'float' : getfloat,
-            'int' : getint,
-            'bit' : getint,
+
+        types: dict[str, typing.Callable[[str], str | float | int]] = {
+            'string': str,
+            'float': getfloat,
+            'int': getint,
+            'bit': getint,
         }
-        
-        arrays : dict[str, typing.Callable[[str], list[str]]] = {
-            'comma' : lambda string : string.split(','),
-            'spaced' : lambda string : string.split(),
+
+        arrays: dict[str, typing.Callable[[str], list[str]]] = {
+            'comma': lambda string: string.split(','),
+            'spaced': lambda string: string.split(),
         }
-        
+
         type_prefix = type.split(':', 1)[0]
         if type_prefix in self.TYPE_ALIASES:
             type = self.TYPE_ALIASES.get(type_prefix, 'string')
-        
+
         values = []
-        
+
         for array in arrays:
             array_types = arrays[array](type)
-            
+
             if len(array_types) > 1:
                 values = arrays[array](value)
                 new_values = []
-                
+
                 type_index = 0
-                
+
                 for val in values:
                     if array_types[type_index] == '...':
                         type_index = 0
-                    new_values.append(self.value(value = val, type = array_types[type_index]))
-                    
+                    new_values.append(
+                        self.value(value = val, type = array_types[type_index])
+                    )
+
                     type_index += 1
-                
+
                 return new_values
-        
+
         if isinstance(value, str):
             value = value.strip()
         return types.get(type, types['string'])(value)
-    
-    def ready_properties(self, include : list[str] = None) -> dict[str,str]:
+
+    def ready_properties(self, include: list[str] = None) -> dict[str, str]:
         """Ready the properties before they are put into the level xml. By default, properties that are equal to their default property counterpart are removed, except 'Type', 'Angle', and 'Filename'.
 
         Args:
@@ -355,12 +359,12 @@ class Type():
         """
         if not isinstance(include, list):
             include = []
-        
+
         properties = self.obj.properties
         self.obj.properties = deepcopy(properties)
-        
+
         include += ['Type', 'Angle', 'Filename']
-        
+
         for property in properties:
             if property in include:
                 continue
@@ -380,19 +384,20 @@ class Type():
                     if prop == property:
                         found_property = True
                         break
-            
+
             if found_property:
                 continue
-            
+
             if property in self.obj.defaultProperties:
-                if property in self.obj.properties and self.obj.properties[property] == self.obj.defaultProperties[property]:
+                if property in self.obj.properties and self.obj.properties[
+                    property] == self.obj.defaultProperties[property]:
                     del self.obj.properties[property]
-        
+
         return self.obj.properties
 
     def get_property(
         self,
-        property : str,
+        property: str,
     ) -> str | float | int | list[str | float | int] | list[list[str | float | int]]:
         """Get the property from the object. If the object doesn't have the property it looks for the default property, then on the Type object itself.
 
@@ -403,31 +408,25 @@ class Type():
             str | float | int | list[str | float | int], list[list[str | float | int]]: The resulting value as python built-in data type.
         """
         if not isinstance(self.obj, Object):
-            prop = self.PROPERTIES.get(
-                property,
-                self.DEFAULT_PROPERTY
-            )
-            
+            prop = self.PROPERTIES.get(property, self.DEFAULT_PROPERTY)
+
             result = None
-            
+
             if 'default' in prop:
                 value = prop['default']
                 type = prop['type']
-                
+
                 result = self.value(value, type)
-            
+
             return result
-        
+
         value = self.obj.properties.get(
-            property,
-            self.obj.defaultProperties.get(
-                property,
-            )
+            property, self.obj.defaultProperties.get(property, )
         )
-        
+
         if value == None:
             value = self.PROPERTIES.get(property).get('default')
-        
+
         split_property = self.split_property_num(property)
         if split_property[1]:
             value = self.value(
@@ -439,35 +438,39 @@ class Type():
                 value,
                 self.PROPERTIES.get(property, {}).get('type', 'string'),
             )
-        
+
         return value
-    
+
     def get_properties(self, property: str) -> dict[str, typing.Any]:
-        def getint(value : str):
+
+        def getint(value: str):
             try:
                 return int(float(value))
             except:
                 return value
-        
+
         result = {}
-        
+
         logging.debug(f'property: {property}')
         if property.endswith('#'):
             properties = set(self.obj.defaultProperties.keys())
             properties.update(self.obj.properties.keys())
-            
+
             split_property = self.split_property_num(property)
-            filtered_properties = sorted(filter(
-                lambda name: self.split_property_num(name)[0] == split_property[0],
-                properties,
-            ), key = lambda name: getint(self.split_property_num(name)[1]))
+            filtered_properties = sorted(
+                filter(
+                    lambda name: self.split_property_num(name)[0] == split_property[0],
+                    properties,
+                ),
+                key = lambda name: getint(self.split_property_num(name)[1])
+            )
 
             logging.debug(f'filtered properties: {filtered_properties}')
-            
+
             for name in filtered_properties:
                 result[name] = self.get_property(name)
-            
+
         else:
             result[property] = self.get_property(property)
-        
+
         return result

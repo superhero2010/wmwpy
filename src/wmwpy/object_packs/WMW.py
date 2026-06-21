@@ -260,7 +260,7 @@ class spout(Type):
     }
 
     def ready_properties(self):
-        return super().ready_properties(include=["SpoutType", "FluidType"])
+        return super().ready_properties(include = ["SpoutType", "FluidType"])
 
 
 WMWObjectPack.register_type(spout)
@@ -275,11 +275,9 @@ class bomb(Type):
             "default": "4000",
         },
     }
-    
+
     def ready_properties(self) -> dict[str, str]:
-        return super().ready_properties(
-            include = ['BlastRadius', 'BlastPower'],
-        )
+        return super().ready_properties(include = ['BlastRadius', 'BlastPower'], )
 
 
 WMWObjectPack.register_type(bomb)
@@ -451,7 +449,7 @@ class fluidconverter(Type):
 
     def ready_properties(self):
         return super().ready_properties(
-            include=[
+            include = [
                 "FluidType",
                 "FluidType#",
                 "StartingFluidType",
@@ -558,11 +556,9 @@ class star(Type):
                 pass
 
     def ready_properties(self) -> dict[str, str]:
-        return super().ready_properties(
-            include=[
-                "StarType",
-            ]
-        )
+        return super().ready_properties(include = [
+            "StarType",
+        ])
 
 
 WMWObjectPack.register_type(star)
@@ -623,17 +619,15 @@ class waterballoon(Type):
         "InitialParticles": {
             "type": "fluid int ...",
             "default": "water 10",
-            "options": [
-                [
-                    "water",
-                    "contaminatedwater",
-                    "lava",
-                    "steam",
-                    "mud",
-                    "drymud",
-                    "wetmud",
-                ]
-            ],
+            "options": [[
+                "water",
+                "contaminatedwater",
+                "lava",
+                "steam",
+                "mud",
+                "drymud",
+                "wetmud",
+            ]],
         },
         "AttachVertIndex": {"type": "index:vert", "default": "6"},
         "MouthSpriteIndex": {"type": "index:sprite", "default": "3"},
@@ -661,16 +655,14 @@ class waterballoon(Type):
         InitialParticles = self.get_property("InitialParticles")
 
         try:
-            particles = numpy.array(InitialParticles, dtype=object).reshape(
-                round(len(InitialParticles) / 2), 2
-            )
+            particles = numpy.array(InitialParticles, dtype = object
+                                    ).reshape(round(len(InitialParticles) / 2), 2)
         except:
             InitialParticles.append(0)
 
             try:
-                particles = numpy.array(InitialParticles, dtype=object).reshape(
-                    round(len(InitialParticles) / 2), 2
-                )
+                particles = numpy.array(InitialParticles, dtype = object
+                                        ).reshape(round(len(InitialParticles) / 2), 2)
             except:
                 return
 
@@ -918,7 +910,9 @@ class floater(Type):
         },
     }
 
+
 WMWObjectPack.register_type(floater)
+
 
 class pipe(Type):
     NAME = 'pipe'
@@ -928,5 +922,6 @@ class pipe(Type):
             "default": "0 0, 0 0, 0 0",
         },
     }
+
 
 WMWObjectPack.register_type(pipe)

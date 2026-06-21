@@ -4,22 +4,21 @@ from ..utils.filesystem import File, Filesystem, Folder
 from ..utils.textures import getHDFile
 from ..utils.waltex import Waltex
 
-
 from PIL import Image
-
 
 import io
 import os
 
 
 class Texture(GameObject):
+
     def __init__(
         this,
-        image : Image.Image | Waltex | File,
-        filesystem : Filesystem | Folder = None,
-        gamepath : str = None,
-        assets : str = '/assets',
-        baseassets : str = '/',
+        image: Image.Image | Waltex | File,
+        filesystem: Filesystem | Folder = None,
+        gamepath: str = None,
+        assets: str = '/assets',
+        baseassets: str = '/',
         HD = False,
         TabHD = False,
     ) -> None:
@@ -74,8 +73,10 @@ class Texture(GameObject):
             this._file = this.filesystem.get(this._file)
             this.image = this._file.read()
         else:
-            raise TypeError('image must be PIL.Image.Image, Waltex, or filesystem.File.')
-        
+            raise TypeError(
+                'image must be PIL.Image.Image, Waltex, or filesystem.File.'
+            )
+
         # this._textureSettings = TextureSettings(
         #     filesystem = this.filesystem,
         #     gamepath = this.gamepath,
@@ -89,14 +90,14 @@ class Texture(GameObject):
         #     this.image = this.image.convert('RGBa')
 
     @property
-    def size(this) -> tuple[int,int]:
+    def size(this) -> tuple[int, int]:
         """The size of the image.
         Returns:
             tuple[int,int]: (width,height)
         """
         return this.image.size
 
-    def save(this, filename : str = None) -> File:
+    def save(this, filename: str = None) -> File:
         """Save the image to the filesystem.
         Args:
             filename (str, optional): Path to save the image to. Defaults to None.
@@ -115,7 +116,7 @@ class Texture(GameObject):
         file = this.filesystem.add(filename, fileio, replace = True)
 
         return file
-    
+
     def show(self, *args, **kwargs):
         """Calls the PIL.Image.Image.show() method.
         

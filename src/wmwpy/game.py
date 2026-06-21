@@ -10,6 +10,7 @@ from .classes import *
 
 from . import object_packs
 
+
 class Game():
     """The wmwpy Game object.
 
@@ -23,11 +24,11 @@ class Game():
         object_pack (ObjectPack): The ObjectPack for this game.
     
     """
-    
+
     _DB = '/Data/water.db'
     _BASEASSETS = '/'
     _PROFILE = None
-    _LEVEL_MATERIALS : dict[str, dict[typing.Literal[
+    _LEVEL_MATERIALS: dict[str, dict[typing.Literal[
         'rgb',
         'type',
         'image',
@@ -35,20 +36,20 @@ class Game():
         'outline_thickness',
         'outline_color',
         'outline_ignore_materials',
-    ], str | tuple[int,int,int] | bool | int | float | list[str]]] = {}
-    
+    ], str | tuple[int, int, int] | bool | int | float | list[str]]] = {}
+
     game = 'WMW'
-    
+
     def __init__(
         this,
-        gamepath : str,
-        assets : str = '/assets',
-        db : str = '/Data/water.db',
-        profile : str = None,
-        baseassets : str = '/',
-        platform : typing.Literal['android', 'ios'] = 'android',
-        load_callback : typing.Callable[[int, str, int], typing.Any] = None,
-        level_materials : dict[str, dict[typing.Literal[
+        gamepath: str,
+        assets: str = '/assets',
+        db: str = '/Data/water.db',
+        profile: str = None,
+        baseassets: str = '/',
+        platform: typing.Literal['android', 'ios'] = 'android',
+        load_callback: typing.Callable[[int, str, int], typing.Any] = None,
+        level_materials: dict[str, dict[typing.Literal[
             'rgb',
             'type',
             'image',
@@ -56,9 +57,8 @@ class Game():
             'outline_thickness',
             'outline_color',
             'outline_ignore_materials',
-        ], str | tuple[int,int,int] | bool | int | float | list[str]]] = None
+        ], str | tuple[int, int, int] | bool | int | float | list[str]]] = None
     ) -> None:
-        
         """load game
 
         Args:
@@ -123,7 +123,7 @@ class Game():
         """
         if gamepath == None:
             return
-        
+
         this.gamepath = os.path.abspath(gamepath)
         # print(f'{gamepath = }\n{this.gamepath = }')
         this.assets = assets
@@ -131,14 +131,16 @@ class Game():
         this.profile = profile or this._PROFILE
         this.baseassets = baseassets or this._BASEASSETS
         this.platform = platform
-        
+
         this.level_materials = deepcopy(level_materials or this._LEVEL_MATERIALS)
-        
+
         this.object_pack = object_packs.get_object_pack(this.game)
-        
+
         this.updateFilesystem(load_callback = load_callback)
-        
-    def updateFilesystem(this, load_callback : typing.Callable[[int, str, int], typing.Any] = None):
+
+    def updateFilesystem(
+        this, load_callback: typing.Callable[[int, str, int], typing.Any] = None
+    ):
         """Update the current filesystem.
 
         Args:
@@ -146,11 +148,11 @@ class Game():
         """
         this.filesystem = Filesystem(this.gamepath, this.assets)
         this.filesystem.getAssets(load_callback = load_callback)
-    
+
     def dump(
         this,
         folder = None,
-        callback : typing.Callable[[int, str, int], typing.Any] = None,
+        callback: typing.Callable[[int, str, int], typing.Any] = None,
     ):
         """Dump the contents of the filesystem to the specified directory
 
@@ -159,16 +161,16 @@ class Game():
             callback (Callable[[int, str, int], Any], optional): A callback function to be ran while dumping the filesystem. Defaults to None.
         """
         this.filesystem.dump(folder = folder, callback = callback)
-        
+
     def Level(
         this,
-        xmlPath : str = None,
-        imagePath : str = None,
-        load_callback : typing.Callable[[int, str, int], typing.Any] = None,
-        ignore_errors : bool = False,
+        xmlPath: str = None,
+        imagePath: str = None,
+        load_callback: typing.Callable[[int, str, int], typing.Any] = None,
+        ignore_errors: bool = False,
         HD = False,
         TabHD = False,
-        object_pack : object_packs.ObjectPack = None,
+        object_pack: object_packs.ObjectPack = None,
     ):
         """Load Level
 
@@ -186,16 +188,16 @@ class Game():
             classes.level.Level: wmwpy Level object.
         """
         logging.debug(f'Game: xml input: {xmlPath}')
-        
+
         levels = this.filesystem.get(joinPath(this.baseassets, '/Levels'))
         if levels == None:
             levels = this.filesystem
-        
+
         if isinstance(xmlPath, File):
             xml = xmlPath
-            
+
             logging.debug(f'Game: xml path: {xmlPath.path}')
-            
+
         else:
             xml = None
             if xmlPath:
@@ -204,28 +206,28 @@ class Game():
                     if imagePath in ['', None]:
                         imagePath = '.'.join([split[0], 'png'])
                     xmlPath = '.'.join([split[0], 'xml'])
-                
+
                 xml = levels.get(xmlPath)
-        
+
         logging.debug(f'Game: xml file before {xml}')
-        
+
         if isinstance(xml, File):
             logging.debug(f'Game: xml path: {xml.path}')
-        
+
         if isinstance(imagePath, File):
             image = imagePath
         else:
             image = None
             if imagePath:
                 image = levels.get(imagePath)
-        
+
         logging.debug(f'Game: xml after: {xml}')
         if isinstance(xml, File):
             logging.debug(f'Game: xml path: {xml.path}')
-        
+
         if object_pack == None:
             object_pack = this.object_pack
-        
+
         level = Level(
             xml = xml,
             image = image,
@@ -240,14 +242,14 @@ class Game():
             level.filename = xmlPath.path
         else:
             level.filename = xmlPath
-        
+
         return level
-    
+
     def Object(
         this,
-        object : str,
-        HD : bool = False,
-        TabHD : bool = False,
+        object: str,
+        HD: bool = False,
+        TabHD: bool = False,
         object_pack = None,
         **kwargs
     ):
@@ -263,17 +265,17 @@ class Game():
         Returns:
             classes.object.Object: Where's My Water? object.
         """
-        
+
         objects = this.filesystem.get(joinPath(this.baseassets, '/Objects'))
         if objects == None:
             objects = this.filesystem
-        
+
         if not isinstance(object, File):
             object = objects.get(object)
-        
+
         if object_pack == None:
             object_pack = this.object_pack
-        
+
         obj = Object(
             object,
             filesystem = this.filesystem,
@@ -286,16 +288,11 @@ class Game():
             obj.filename = object.path
         else:
             obj.filename = object
-            
-        
+
         return obj
-    
+
     def Imagelist(
-        this,
-        imagelist : str = None,
-        HD = False,
-        TabHD = False,
-        save_images = False
+        this, imagelist: str = None, HD = False, TabHD = False, save_images = False
     ):
         """
         Load imagelist
@@ -309,19 +306,19 @@ class Game():
         Returns:
             classes.imagelist.Imagelist: Imagelist object.
         """
-        
+
         textures = this.filesystem.get(joinPath(this.baseassets, '/Textures'))
         if textures == None:
             textures = this.filesystem
-        
+
         if not isinstance(imagelist, File):
             if isinstance(imagelist, str):
                 split = os.path.splitext(imagelist)
                 if split[1] == '':
                     imagelist = ''.join([split[0], '.imagelist'])
-                
+
             imagelist = textures.get(imagelist)
-        
+
         imagelistObject = Imagelist(
             imagelist,
             filesystem = this.filesystem,
@@ -329,16 +326,10 @@ class Game():
             TabHD = TabHD,
             save_images = save_images,
         )
-        
+
         return imagelistObject
-    
-    def Sprite(
-        this,
-        sprite : str,
-        HD = False,
-        TabHD = False,
-        **kwargs
-    ):
+
+    def Sprite(this, sprite: str, HD = False, TabHD = False, **kwargs):
         """
         Loads sprite.
 
@@ -350,31 +341,27 @@ class Game():
         Returns:
             classes.sprite.Sprite: Sprite object.
         """
-        
+
         sprites = this.filesystem.get(joinPath(this.baseassets, '/Sprites'))
         if sprites == None:
             sprites = this.filesystem
-        
+
         if not isinstance(sprite, File):
             sprite = sprites.get(sprite)
-        
+
         spriteObject = Sprite(
-            sprite,
-            filesystem = this.filesystem,
-            HD = HD,
-            TabHD = TabHD,
-            **kwargs
+            sprite, filesystem = this.filesystem, HD = HD, TabHD = TabHD, **kwargs
         )
         if isinstance(sprite, File):
             spriteObject.filename = sprite.path
         else:
             spriteObject.filename = sprite.path
-        
+
         return spriteObject
-    
+
     def Texture(
         this,
-        texture : str | File,
+        texture: str | File,
         HD = False,
         TabHD = False,
     ):
@@ -389,25 +376,25 @@ class Game():
         Returns:
             utils.textures.Texture: Texture object.
         """
-        
+
         textures = this.filesystem.get(joinPath(this.baseassets, '/Textures'))
         if textures == None:
             textures = this.filesystem
-        
+
         if isinstance(texture, str):
             texture = textures.get(texture)
-        
+
         return Texture(
             texture,
             filesystem = this.filesystem,
             HD = HD,
             TabHD = TabHD,
         )
-    
-    def Layout(this, layout : str):
+
+    def Layout(this, layout: str):
         raise NotImplementedError('load layout is not implemented yet.')
-    
-    def Location(this, location : str) -> Location:
+
+    def Location(this, location: str) -> Location:
         """Load Location in `WMW2`
 
         Args:
@@ -419,10 +406,10 @@ class Game():
         locations = this.filesystem.get(joinPath(this.baseassets, '/Locations'))
         if locations == None:
             locations = this.filesystem
-        
+
         if isinstance(location, str):
             location = locations.get(location)
-        
+
         return Location(
             location,
             filesystem = this.filesystem,
@@ -430,9 +417,8 @@ class Game():
             assets = this.assets,
             baseassets = this.baseassets,
         )
-        
-    
-    def Database(this, path : str = None) -> Database:
+
+    def Database(this, path: str = None) -> Database:
         """Load the game database.
 
         Args:
@@ -443,20 +429,24 @@ class Game():
         """
         if path == None:
             path = this.db
-        
+
         file = this.filesystem.get(path)
-        
+
         return Database(file)
 
-    def TextureSettings(this, path : str = None):
+    def TextureSettings(this, path: str = None):
         if path == None:
-            file = this.filesystem.get(joinPath(this.baseassets, '/Data/textureSettings.xml'))
+            file = this.filesystem.get(
+                joinPath(this.baseassets, '/Data/textureSettings.xml')
+            )
         elif isinstance(path, str):
             file = this.filesystem.get(path)
         elif isinstance(path, File):
             file = path
         else:
-            file = this.filesystem.get(joinPath(this.baseassets, '/Data/textureSettings.xml'))
+            file = this.filesystem.get(
+                joinPath(this.baseassets, '/Data/textureSettings.xml')
+            )
 
         return TextureSettings(
             file,
@@ -465,11 +455,11 @@ class Game():
             gamepath = this.gamepath,
             baseassets = this.baseassets,
         )
-    
+
     def FileManifest(
         this,
-        writeFile : bool = True,
-        filename : str = '/FileManifest.txt',
+        writeFile: bool = True,
+        filename: str = '/FileManifest.txt',
     ):
         """Generate the `FileManifest.txt` file needed for some games, such as WMM. This just generates a text file with the paths to every file in the `assets` folder (which includes the `FileManifest.txt` file).
 
@@ -481,8 +471,8 @@ class Game():
             str: Contents of `FileManifest.txt`
         """
         manifest = '\n'.join(this.filesystem.listdir(recursive = True))
-        
+
         if writeFile:
             this.filesystem.add(filename, manifest, replace = True)
-        
+
         return manifest

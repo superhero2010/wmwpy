@@ -12,19 +12,21 @@ from ..gameobject import GameObject
 
 _cachedWaltextImages = {}
 
+
 class HDFile(GameObject):
+
     def __init__(
         this,
-        file : str | File,
-        HD : bool = True,
-        TabHD : bool = False, 
+        file: str | File,
+        HD: bool = True,
+        TabHD: bool = False,
         filesystem: Filesystem | Folder = None,
         gamepath: str = None,
         assets: str = '/assets',
         baseassets: str = '/',
     ) -> None:
         super().__init__(filesystem, gamepath, assets, baseassets)
-        
+
         if isinstance(file, File):
             this.file = file.path
         elif isinstance(file, str):
@@ -34,11 +36,11 @@ class HDFile(GameObject):
 
         this.HD = HD
         this.TabHD = TabHD
-    
+
     @property
     def filename(this) -> str:
         name, extension = os.path.splitext(this.file)
-        
+
         if this.TabHD:
             filename = f'{name}-TabHD{extension}'
             if this.filesystem == None:
@@ -46,9 +48,9 @@ class HDFile(GameObject):
 
             if this.filesystem.exists(filename):
                 return filename
-        
+
         this.TabHD = False
-        
+
         if this.HD:
             filename = f'{name}-HD{extension}'
             if this.filesystem == None:
@@ -56,19 +58,20 @@ class HDFile(GameObject):
 
             if this.filesystem.exists(filename):
                 return filename
-        
+
         this.HD = False
-        
+
         return this.file
 
+
 def getHDFile(
-    file : str,
+    file: str,
     HD = True,
     TabHD = False,
-    filesystem : Filesystem = None,
-    gamepath : str = None,
-    assets : str = '/assets',
-    baseassets : str = '/',
+    filesystem: Filesystem = None,
+    gamepath: str = None,
+    assets: str = '/assets',
+    baseassets: str = '/',
 ) -> str:
     """Get HD filename.
 
@@ -88,12 +91,10 @@ def getHDFile(
         assets = assets,
         baseassets = baseassets,
     ).filename
-            
+
+
 def getTexture(
-    path : str,
-    textureSettings : dict,
-    size : tuple,
-    cache = True
+    path: str, textureSettings: dict, size: tuple, cache = True
 ) -> Image.Image:
     """Get image.
 
@@ -115,12 +116,10 @@ def getTexture(
             except:
                 pass
         if image == None:
-            image = Waltex(
-                path
-            ).image
+            image = Waltex(path).image
             if cache:
                 _cachedWaltextImages[path] = image.copy()
     else:
         image = Image.open(path).convert('RGBA')
-        
+
     return image

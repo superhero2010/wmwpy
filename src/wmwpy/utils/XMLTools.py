@@ -1,6 +1,7 @@
 from lxml import etree
 
-def findTag(root : etree.ElementBase, tag : str) -> etree.ElementBase:
+
+def findTag(root: etree.ElementBase, tag: str) -> etree.ElementBase:
     """Find an element in an etree element.
 
     Args:
@@ -19,10 +20,11 @@ def findTag(root : etree.ElementBase, tag : str) -> etree.ElementBase:
         curTag = e.tag
         if curTag == tag:
             return e
-        
+
     return None
 
-def strbool(value : str) -> bool:
+
+def strbool(value: str) -> bool:
     """Convert a string to a bool
 
     Args:

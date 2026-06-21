@@ -2,31 +2,31 @@
 from ...utils.filesystem import Filesystem, Folder
 from ...gameobject import GameObject
 
-
 from PIL import Image
 from lxml import etree
 
-WIDGETS : dict[str, 'Widget'] = {}
+WIDGETS: dict[str, 'Widget'] = {}
+
 
 class Widget(GameObject):
+
     def __init__(
         this,
-        xml : etree.ElementBase = None,
+        xml: etree.ElementBase = None,
         filesystem: Filesystem | Folder = None,
         gamepath: str = None,
         assets: str = '/assets',
         baseassets: str = '/',
-        screenSize : tuple = (900,720),
+        screenSize: tuple = (900, 720),
     ) -> None:
         """
             Main widget
         """
         if xml == None:
             return
-        
-        
+
         super().__init__(filesystem, gamepath, assets, baseassets)
-        
+
         this.xml = xml
         this.properties = this.xml.attrib
         this.type = this.properties['type']
@@ -41,7 +41,7 @@ class Widget(GameObject):
 
         this.getValues()
 
-        this.image = Image.new('RGBA', (100,100))
+        this.image = Image.new('RGBA', (100, 100))
 
     def getValues(this):
         if 'pos' in this.properties:
@@ -62,7 +62,7 @@ class Widget(GameObject):
         if 'visible' in this.properties:
             this.visible = bool(this.properties['visible'])
 
-    def setForceAspect(this, aspect = (1,1)):
+    def setForceAspect(this, aspect = (1, 1)):
         if isinstance(aspect, str):
             forceAspect = tuple([float(v) for v in aspect.split(':')])
         elif not aspect:
@@ -75,6 +75,7 @@ class Widget(GameObject):
     @property
     def type(this):
         return this.properties['type']
+
     @type.setter
     def type(this, value):
         this.properties['type'] = value
@@ -85,7 +86,7 @@ class Widget(GameObject):
             this.__class__ = Widget
 
 
-def register_widget(name : str, class_ : Widget):
+def register_widget(name: str, class_: Widget):
 
     if not isinstance(class_, type):
         class_ = class_.__class__
@@ -100,6 +101,7 @@ def register_widget(name : str, class_ : Widget):
     except:
         pass
     WIDGETS[name] = class_
+
 
 def get_widget(name, *args, **kwargs) -> Widget:
     if name in WIDGETS:

@@ -28,8 +28,9 @@ import commonmark
 
 py_attr_re = re.compile(r"\:py\:\w+\:(``[^:`]+``)")
 
+
 def docstring(app, what, name, obj, options, lines):
-    md  = '\n'.join(lines)
+    md = '\n'.join(lines)
     ast = commonmark.Parser().parse(md)
     rst = commonmark.ReStructuredTextRenderer().render(ast)
     lines.clear()
@@ -39,7 +40,7 @@ def docstring(app, what, name, obj, options, lines):
         while True:
             match = py_attr_re.search(line)
             if match is None:
-                break 
+                break
 
             start, end = match.span(1)
             line_start = line[:start]
@@ -48,8 +49,10 @@ def docstring(app, what, name, obj, options, lines):
             line = line_start + line_modify[1:-1] + line_end
         lines[i] = line
 
+
 def setup(app):
     app.connect('autodoc-process-docstring', docstring)
+
 
 extensions = [
     'sphinx.ext.autodoc',

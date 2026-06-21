@@ -9,4 +9,7 @@ from .database import Database
 from .texturesettings import TextureSettings
 from . import objectpack
 
-__all__ = ['Level', 'Layout', 'Sprite', 'Object', 'Imagelist', 'Widget', 'Database', 'Location', 'TextureSettings']
+__all__ = [
+    'Level', 'Layout', 'Sprite', 'Object', 'Imagelist', 'Widget', 'Database',
+    'Location', 'TextureSettings'
+]

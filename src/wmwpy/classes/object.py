@@ -173,7 +173,7 @@ class Object(GameObject):
         if len(rects) == 0:
             rects.append([0, 0])
 
-        rects = numpy.array(rects).swapaxes(0,1)
+        rects = numpy.array(rects).swapaxes(0, 1)
 
         min = numpy.array([math.floor(v.min()) for v in rects])
         max = numpy.array([math.ceil(v.max()) for v in rects])

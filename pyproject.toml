@@ -32,3 +32,8 @@ dynamic = ["version"]
 
 [tool.setuptools.dynamic]
 version = { attr = "wmwpy.__version__" }
+
+[dependency-groups]
+dev = [
+    "yapf>=0.43.0",
+]

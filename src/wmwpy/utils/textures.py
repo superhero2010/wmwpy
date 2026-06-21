@@ -23,7 +23,7 @@ class HDFile(GameObject):
         filesystem: Filesystem | Folder = None,
         gamepath: str = None,
         assets: str = '/assets',
-        baseassets: str = '/',
+        baseassets: str = '/'
     ) -> None:
         super().__init__(filesystem, gamepath, assets, baseassets)
 
@@ -63,15 +63,14 @@ class HDFile(GameObject):
 
         return this.file
 
-
 def getHDFile(
-    file: str,
+    file : str,
     HD = True,
     TabHD = False,
-    filesystem: Filesystem = None,
-    gamepath: str = None,
-    assets: str = '/assets',
-    baseassets: str = '/',
+    filesystem : Filesystem = None,
+    gamepath : str = None,
+    assets : str = '/assets',
+    baseassets : str = '/',
 ) -> str:
     """Get HD filename.
 
@@ -91,10 +90,12 @@ def getHDFile(
         assets = assets,
         baseassets = baseassets,
     ).filename
-
-
+            
 def getTexture(
-    path: str, textureSettings: dict, size: tuple, cache = True
+    path : str,
+    textureSettings : dict,
+    size : tuple,
+    cache = True
 ) -> Image.Image:
     """Get image.
 

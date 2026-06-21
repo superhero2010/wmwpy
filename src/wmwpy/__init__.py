@@ -16,14 +16,14 @@ __all__ = ['load', 'Game', 'utils', 'classes', 'GAMES', 'filesystem']
 
 
 def load(
-    gamepath: str,
-    platform: typing.Literal['android', 'ios'] = 'android',
-    game: str = 'WMW',
-    assets: str = None,
-    db: str = None,
-    profile: str = None,
-    baseassets: str = None,
-    load_callback: typing.Callable[[int, str, int], typing.Any] = None,
+    gamepath : str,
+    platform : typing.Literal['android', 'ios'] = 'android',
+    game : str = 'WMW',
+    assets : str = None,
+    db : str = None,
+    profile : str = None,
+    baseassets : str = None,
+    load_callback : typing.Callable[[int, str, int], typing.Any] = None,
 ) -> Game:
     """load game
 
@@ -40,7 +40,7 @@ def load(
 
     game = game.upper()
     platform = platform.lower()
-
+    
     platforms = {
         'android': {
             'assets': '/assets',
@@ -49,16 +49,9 @@ def load(
             'assets': '/Content',
         },
     }
-
+    
     if assets == None:
         assets = platforms[platform]['assets']
 
     # try:
-    return GAMES.get(game, Game)(
-        gamepath = gamepath,
-        assets = assets,
-        db = db,
-        profile = profile,
-        load_callback = load_callback,
-        baseassets = baseassets,
-    )
+    return GAMES.get(game, Game)(gamepath = gamepath, assets = assets, db = db, profile = profile, load_callback = load_callback, baseassets = baseassets)

@@ -10,10 +10,10 @@ class GameObject():
 
     def __init__(
         this,
-        filesystem: Filesystem | Folder = None,
-        gamepath: str = None,
-        assets: str = '/assets',
-        baseassets: str = '/',
+        filesystem : Filesystem | Folder = None,
+        gamepath : str = None,
+        assets : str = '/assets',
+        baseassets : str = '/',
     ) -> None:
         """Load filesystem
 
@@ -50,8 +50,8 @@ class GameObject():
 
     def get_file(
         this,
-        file: bytes | File | io.BytesIO | str,
-        template: str | io.BytesIO = None,
+        file : bytes | File | io.BytesIO | str,
+        template : str | io.BytesIO = None,
     ) -> io.BytesIO | str:
         """Get file
 
@@ -83,23 +83,21 @@ class GameObject():
 
     def truePos(
         this,
-        pos: tuple[int, int] = (0, 0),
-        obj_size: tuple[int, int] = (0, 0),
-        parent_size: tuple[int, int] = (0, 0),
-        offset: tuple[int, int] = (0, 0),
-        obj_anchor: typing.Literal['center', 'c', 'n', 'ne', 'e', 'se', 's', 'sw', 'w',
-                                   'nw'] = 'center',
-        parent_anchor: typing.Literal['center', 'c', 'n', 'ne', 'e', 'se', 's', 'sw',
-                                      'w', 'nw'] = 'center',
-        scale: int = 1,
-    ) -> tuple[int, int]:
+        pos : tuple[int,int] = (0,0),
+        obj_size : tuple[int,int] = (0,0),
+        parent_size : tuple[int,int] = (0,0),
+        offset : tuple[int,int] = (0,0),
+        obj_anchor : typing.Literal['center', 'c', 'n', 'ne', 'e', 'se', 's', 'sw', 'w', 'nw'] = 'center',
+        parent_anchor : typing.Literal['center', 'c', 'n', 'ne', 'e', 'se', 's', 'sw', 'w', 'nw'] = 'center',
+        scale : int = 1,
+    ) -> tuple[int,int]:
         """Get the true position of an object inside a larger object.
 
         Args:
-            pos (tuple[x,y], optional): The position of the object. Defaults to (0,0).
-            obj_size (tuple[width,height], optional): The size of the object. Defaults to (0,0).
-            parent_size (tuple[width,height], optional): The size of the parent. Defaults to (0,0).
-            offset (tuple[x,y], optional): An offset. Defaults to (0,0).
+            pos (tuple[x,y], optional): The position of the object. Defaults to (0, 0).
+            obj_size (tuple[width,height], optional): The size of the object. Defaults to (0, 0).
+            parent_size (tuple[width,height], optional): The size of the parent. Defaults to (0, 0).
+            offset (tuple[x,y], optional): An offset. Defaults to (0, 0).
             obj_anchor (typing.Literal["center", "c", "n", "ne", "e", "se", "s", "sw", "w", "nw"], optional): The object anchor. Defaults to 'center'.
             parent_anchor (typing.Literal["center", "c", "n", "ne", "e", "se", "s", "sw", "w", "nw"], optional): The parent anchor. Defaults to 'center'.
             scale (int, optional): A scale for the position. Defaults to 1.
@@ -108,7 +106,7 @@ class GameObject():
             TypeError: Invalid anchor.
 
         Returns:
-            tuple[int,int]: The new position.
+            tuple[int, int]: The new position.
         """
         pos = numpy.array(pos)
         obj_size = numpy.array(obj_size)
@@ -116,16 +114,16 @@ class GameObject():
         offset = numpy.array(offset)
 
         anchors = {
-            'center': numpy.array((0.5, 0.5)),
-            'c': numpy.array((0.5, 0.5)),
-            'nw': numpy.array((0, 0)),
-            'n': numpy.array((0.5, 0)),
-            'ne': numpy.array((1, 0)),
-            'e': numpy.array((1, 0.5)),
-            'se': numpy.array((1, 1)),
-            's': numpy.array((0.5, 1)),
-            'sw': numpy.array((0, 1)),
-            'w': numpy.array((0, 0.5)),
+            'center': numpy.array((0.5,0.5)),
+            'c': numpy.array((0.5,0.5)),
+            'nw': numpy.array((0,0)),
+            'n': numpy.array((0.5,0)),
+            'ne': numpy.array((1,0)),
+            'e': numpy.array((1,0.5)),
+            'se': numpy.array((1,1)),
+            's': numpy.array((0.5,1)),
+            'sw': numpy.array((0,1)),
+            'w': numpy.array((0,0.5)),
         }
 
         obj_anchor = obj_anchor.lower()
@@ -138,11 +136,10 @@ class GameObject():
 
         obj_anchor = anchors[obj_anchor]
         parent_anchor = anchors[parent_anchor]
-
-        pos = pos * [1, -1]
-        obj_size = obj_size * [1, -1]
-        offset = offset * [1, -1]
-        pos = ((pos - offset) - ((obj_size * obj_anchor) -
-                                 (parent_size * parent_anchor))) * scale
-
+        
+        pos = pos * [1,-1]
+        obj_size = obj_size * [1,-1]
+        offset = offset * [1,-1]
+        pos = ((pos - offset) - ((obj_size * obj_anchor) - (parent_size * parent_anchor))) * scale
+        
         return tuple(pos)

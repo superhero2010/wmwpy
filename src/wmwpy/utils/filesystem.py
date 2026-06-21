@@ -23,8 +23,12 @@ FILE_READERS = []
 
 
 class Filesystem():
-
-    def __init__(self, gamepath: str, assets: str, baseassets: str = '/') -> None:
+    def __init__(
+        self,
+        gamepath : str,
+        assets : str,
+        baseassets : str = '/'
+    ) -> None:
         """wmwpy filesystem
 
         Args:
@@ -37,8 +41,8 @@ class Filesystem():
         self.baseassets = baseassets
         self.parent = self
         self.root = Folder(self, '/')
-
-    def get(self, path: str):
+    
+    def get(self, path : str):
         """Get file in filesystem.
 
         Args:
@@ -48,8 +52,8 @@ class Filesystem():
             File or Folder: File or Folder object.
         """
         return self.root.get(path)
-
-    def add(self, path: str, file: str | bytes, replace = False):
+    
+    def add(self, path : str, file : str | bytes, replace = False):
         """
         Adds file with path to Folder.
 
@@ -80,20 +84,20 @@ class Filesystem():
         #     raise TypeError(f"file can only 'str', 'bytes', or file-like object.")
 
         return self.root.add(path = path, content = file, replace = replace)
-
-    def remove(self, path: str):
+    
+    def remove(self, path : str):
         """Remove a file or folder
 
         Args:
             path (str): Path to file or folder to remove.
         """
         return self.root.remove(path)
-
+    
     def getAssets(
         self,
         extract_zip = False,
         split_imagelist = False,
-        load_callback: typing.Callable[[int, str, int], typing.Any] = None,
+        load_callback : typing.Callable[[int, str, int], typing.Any] = None,
     ):
         """Scans the assets directory and loads all files into the filesystem. This is so wmwpy can modify files without modifying the actual files.
 
@@ -108,8 +112,8 @@ class Filesystem():
         Returns:
             this: Current Filesystem object.
         """
-
-        def dirlength(path: str):
+                    
+        def dirlength(path : str):
             count = 0
             for file in os.scandir(path):
                 if file.is_dir():
@@ -139,9 +143,9 @@ class Filesystem():
                 if callable(load_callback):
                     current += 1
                     load_callback(current, path, total)
-
-                fileobj: File = self.add(path, os.path.join(dir, file))
-
+                
+                fileobj : File = self.add(path, os.path.join(dir, file))
+                
                 if fileobj.extension == 'zip' and extract_zip:
                     fileobj.read()
 
@@ -149,8 +153,8 @@ class Filesystem():
             load_callback(current, 'Finished loading game', total)
 
         return self
-
-    def exists(self, fp: str) -> bool:
+    
+    def exists(self, fp : str) -> bool:
         """Test if file path exists.
 
         Args:
@@ -177,7 +181,7 @@ class Filesystem():
         self,
         folder: str = None,
         # patch : bool = False,
-        callback: typing.Callable[[int, str, int], typing.Any] = None,
+        callback : typing.Callable[[int, str, int], typing.Any] = None,
     ):
         """Dump the contents of the filesystem to the specified directory
 
@@ -187,28 +191,28 @@ class Filesystem():
         """
         if folder == None:
             folder = joinPath(self.gamepath, self.assets)
-
-        files = self.listdir(recursive = True)
+        
+        files = self.listdir(recursive=True)
         total = len(files)
         progress = 0
-
-        #         if patch:
-        #             assets = pathlib.Path(self.assets)
-        #
-        #             if len(assets.parts) == 0:
-        #                 return
-        #
-        #             if assets.parts[0] in ['/', '\\']:
-        #                 assets.parts
-        #                 assets = pathlib.Path(*assets.parts[1::])
-        #
-        #             if len(assets.parts) == 0:
-        #                 return
-        #
-        #             assets = assets.parts[0]
-        #
-        #             gameFiles = pathlib.Path(self.gamepath).glob(f'[/!{assets}/]*')
-
+        
+#         if patch:
+#             assets = pathlib.Path(self.assets)
+# 
+#             if len(assets.parts) == 0:
+#                 return
+# 
+#             if assets.parts[0] in ['/', '\\']:
+#                 assets.parts
+#                 assets = pathlib.Path(*assets.parts[1::])
+# 
+#             if len(assets.parts) == 0:
+#                 return
+# 
+#             assets = assets.parts[0]
+#             
+#             gameFiles = pathlib.Path(self.gamepath).glob(f'[/!{assets}/]*')
+        
         # print(f'output: {output}')
 
         for path in files:
@@ -231,9 +235,9 @@ class Filesystem():
             newpath = pathlib.Path(folder, *parts)
 
             # print(f'writing: {newpath.as_posix()}')
-
-            newpath.parent.mkdir(exist_ok = True)
-
+            
+            newpath.parent.mkdir(exist_ok=True)
+            
             data = file.rawdata.getvalue()
 
             with open(newpath, 'wb') as f:
@@ -241,13 +245,12 @@ class Filesystem():
 
         if callable(callback):
             callback(progress, 'Done!', total)
-
-
+    
 # Filesystem helpers
 class FileBase():
     name = ''
-
-    def __init__(self, parent, path: str):
+    
+    def __init__(self, parent, path : str):
         """File Base
 
         Args:
@@ -256,9 +259,9 @@ class FileBase():
         """
         self._type = self._Type(None)
         self.name = pathlib.Path(path).parts[0]
-        self.parent: Folder = parent
-
-    def get(self, path: str):
+        self.parent : Folder = parent
+    
+    def get(self, path : str):
         """Get file in filesystem.
 
         Args:
@@ -271,8 +274,8 @@ class FileBase():
         if path == '.':
             return self
         return self.parent.get(path)
-
-    def remove(self, path: str = '.'):
+    
+    def remove(self, path : str = '.'):
         """Remove file or folder.
 
         Args:
@@ -342,18 +345,17 @@ class FileBase():
     class _Type():
         FOLDER = 0
         FILE = 1
-
-        def __init__(self, type: int) -> None:
-            self.value = type
-
-
+        
+        def __init__(self, type : int) -> None:
+            self.value = type    
+    
+    
 class File(FileBase):
-
     def __init__(
         self,
         parent,
         path: str,
-        data: bytes | str | io.BytesIO,
+        data : bytes | str | io.BytesIO,
     ):
         """File
 
@@ -451,9 +453,9 @@ class File(FileBase):
         return self._rawdata
 
     @rawdata.setter
-    def rawdata(self, value: io.BytesIO):
-        self._rawdata: io.BytesIO = value
-
+    def rawdata(self, value : io.BytesIO):
+        self._rawdata : io.BytesIO = value
+    
     @property
     def extension(self) -> str:
         """The file extension
@@ -543,8 +545,8 @@ class File(FileBase):
         self.rawdata.seek(0)
 
         return self.content
-
-    def add(self, path: str, file: bytes, replace = False):
+    
+    def add(self, path : str, file : bytes, replace = False):
         """Add file to folder.
 
         Args:
@@ -560,8 +562,8 @@ class File(FileBase):
             File: Newly added File.
         """
         return self.parent.add(path, file, replace = replace)
-
-    def exists(self, path: str):
+    
+    def exists(self, path : str):
         """Tests whether path exists.
 
         Args:
@@ -571,13 +573,8 @@ class File(FileBase):
             bool: Does path exist?
         """
         return self.parent.exists(path)
-
-    def write(
-        self,
-        data: bytes,
-        extension = None,
-        mime = None,
-    ) -> int:
+    
+    def write(self, data : bytes, extension = None, mime = None,) -> int:
         """Write data to file.
 
         Args:
@@ -604,7 +601,7 @@ class File(FileBase):
             list: List of files and subfolders.
         """
         return self.parent.listdir(recursive = recursive, search = search)
-
+    
 
 class Folder(FileBase):
 
@@ -625,11 +622,11 @@ class Folder(FileBase):
         super().__init__(parent, path)
         self._type.value = self._Type.FOLDER
         self.files = []
-
+        
     def add(
         self,
-        path: str,
-        content: bytes,
+        path : str,
+        content : bytes,
         replace = False,
     ) -> File:
         """Add file to folder.
@@ -656,10 +653,8 @@ class Folder(FileBase):
 
             if file._type.value != file._Type.FOLDER:
                 raise NotADirectoryError(f"{file.path} is not a directory.")
-
-            return file.add(
-                pathlib.Path(*parts[1::]).as_posix(), content, replace = replace
-            )
+            
+            return file.add(pathlib.Path(*parts[1::]).as_posix(), content, replace=replace)
         else:
             if file != None:
                 if not replace:
@@ -671,8 +666,8 @@ class Folder(FileBase):
             self.files.append(file)
 
             return file
-
-    def _getPath(self, path: str):
+        
+    def _getPath(self, path : str):
         """Get File or Folder with this path.
 
         Args:
@@ -693,8 +688,8 @@ class Folder(FileBase):
                     file = f
                     break
         return file
-
-    def get(self, path: str) -> File:
+    
+    def get(self, path : str) -> File:
         """Get file in filesystem.
 
         Args:
@@ -716,8 +711,8 @@ class Folder(FileBase):
         if file._type.value == self._Type.FOLDER:
             file = file.get(pathlib.Path(*parts[1::]))
         return file
-
-    def exists(self, path: str) -> bool:
+    
+    def exists(self, path : str) -> bool:
         """Tests whether path exists.
 
         Args:
@@ -756,8 +751,8 @@ class Reader():
 
     def __init__(self, ) -> None:
         pass
-
-    def check(self, mime: str, extension: str, rawdata: io.BytesIO, **kwargs):
+    
+    def check(self, mime : str, extension : str, rawdata : io.BytesIO, **kwargs):
         """Check file type.
 
         Args:
@@ -769,8 +764,8 @@ class Reader():
             bool: Whether the file is of this type.
         """
         return mime.startswith(self.MIME)
-
-    def read(self, mime: str, extension: str, rawdata: io.BytesIO, **kwargs):
+    
+    def read(self, mime : str, extension : str, rawdata : io.BytesIO, **kwargs):
         """Read file.
 
         Args:
@@ -785,10 +780,10 @@ class Reader():
             encoding = kwargs['encoding']
         else:
             encoding = 'utf-8'
-
-        return rawdata.getvalue().decode(encoding = encoding)
-
-    def save(self, data: bytes | io.BytesIO) -> bytes:
+        
+        return rawdata.getvalue().decode(encoding=encoding)
+    
+    def save(self, data : bytes | io.BytesIO) -> bytes:
         if isinstance(data, io.BytesIO):
             return data.getvalue()
         return data

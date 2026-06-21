@@ -28,7 +28,7 @@ from ..utils.XMLTools import strbool
 
 class Object(GameObject):
     """wmwpy Object.
-    
+
     Attributes:
         HD (bool): Using HD images.
         TabHD (bool): Using TabHD images.
@@ -47,18 +47,18 @@ class Object(GameObject):
 
     def __init__(
         this,
-        file: str | bytes | File,
-        filesystem: Filesystem | Folder = None,
-        gamepath: str = None,
-        assets: str = '/assets',
-        baseassets: str = '/',
-        properties: dict = {},
-        pos: tuple | str = (0, 0),
-        name: str = 'Obj',
-        scale: int = 50,
-        HD: bool = False,
-        TabHD: bool = False,
-        object_pack: 'ObjectPack' = None,
+        file : str | bytes | File,
+        filesystem : Filesystem | Folder = None,
+        gamepath : str = None,
+        assets : str = '/assets',
+        baseassets : str = '/',
+        properties : dict = {},
+        pos : tuple | str = (0,0),
+        name : str = 'Obj',
+        scale : int = 50,
+        HD : bool = False,
+        TabHD : bool = False,
+        object_pack : 'ObjectPack' = None,
     ) -> None:
         """Get game object. Game object is `.hs` file.
 
@@ -69,7 +69,7 @@ class Object(GameObject):
             assets (str, optional): Assets path relative to game path. Only used if filesystem not specified. Defaults to '/assets'.
             baseassets (str, optional): Base assets path within the assets folder, e.g. `/perry/` in wmp. Defaults to `/`
             properties (dict, optional): Object properties that override default properties. Defaults to {}.
-            pos (tuple | str, optional): Position of object. Defaults to (0,0).
+            pos (tuple | str, optional): Position of object. Defaults to (0, 0).
             name (str, optional): Name of object. Defaults to 'Obj'.
             scale (int, optional): The image scale. Defaults to 10.
             HD (bool, optional): Use HD images. Defaults to False.
@@ -89,12 +89,12 @@ class Object(GameObject):
 
         this.HD = HD
         this.TabHD = TabHD
-
-        this.xml: etree.ElementBase = etree.parse(this.file).getroot()
-        this.sprites: list[Sprite] = []
-        this.shapes: list[Shape] = []
-        this.UVs: list[tuple[int, int]] = []
-        this.VertIndices: list[int] = []
+        
+        this.xml : etree.ElementBase = etree.parse(this.file).getroot()
+        this.sprites : list[Sprite] = []
+        this.shapes : list[Shape] = []
+        this.UVs : list[tuple[int,int]] = []
+        this.VertIndices : list[int] = []
         this.defaultProperties = {}
         this.properties = {}
         this.name = name
@@ -103,12 +103,12 @@ class Object(GameObject):
         this.frame = 0
 
         this.object_pack = object_pack
-
-        this._background: list[Sprite] = []
-        this._foreground: list[Sprite] = []
-        this._PhotoImage: dict[str, 'ImageTk.PhotoImage'] = {}
-
-        this._offset = [0, 0]
+        
+        this._background : list[Sprite] = []
+        this._foreground : list[Sprite] = []
+        this._PhotoImage : dict[str, 'ImageTk.PhotoImage'] = {}
+        
+        this._offset = [0,0]
         this.scale = scale
 
         this.readXML()
@@ -133,38 +133,41 @@ class Object(GameObject):
         this._frame = value
         for sprite in this.sprites:
             sprite.frame = value
-
-    def getOffset(this) -> tuple[float, float]:
+    
+    def getOffset(this) -> tuple[float,float]:
         """Get the center offset for the Object image
 
         Returns:
             tuple[float,float]: (x,y)
         """
         rects = []
-        this._background: list[Sprite] = []
-        this._foreground: list[Sprite] = []
-
+        this._background : list[Sprite] = []
+        this._foreground : list[Sprite] = []
+        
         for sprite in this.sprites:
             if 'visible' in sprite.properties:
                 if not strbool(sprite.properties['visible']):
                     continue
-            if ('isBackground'
-                in sprite.properties) and strbool(sprite.properties['isBackground']):
+            if ('isBackground' in sprite.properties) and strbool(sprite.properties['isBackground']):
                 this._background.append(sprite)
             else:
                 this._foreground.append(sprite)
-
+                
             pos = numpy.array(sprite.pos)
-            size = (numpy.array(sprite.image.size) / sprite.scale) * [1, -1]
-
-            rects.append(tuple(pos - (size / 2)))
-            rects.append(tuple(pos + (size / 2)))
-
+            size = (numpy.array(sprite.image.size) / sprite.scale) * [1,-1]
+            
+            rects.append(
+                tuple(pos - (size / 2))
+            )
+            rects.append(
+                tuple(pos + (size / 2))
+            )
+        
         if len(rects) == 0:
-            rects.append([0, 0])
-
-        rects = numpy.array(rects).swapaxes(0, 1)
-
+            rects.append([0,0])
+            
+        rects = numpy.array(rects).swapaxes(0,1)
+        
         min = numpy.array([math.floor(v.min()) for v in rects])
         max = numpy.array([math.ceil(v.max()) for v in rects])
 
@@ -224,13 +227,17 @@ class Object(GameObject):
         image = Image.new('RGBA', tuple(this.size * this.scale), (0, 0, 0, 0))
 
         for sprite in this._background:
-            size = (numpy.array(sprite.image.size) / sprite.scale) * [1, -1]
+            size = (numpy.array(sprite.image.size) / sprite.scale) * [1,-1]
             pos = this.truePos(
-                sprite.pos, size, this.size, scale = this.scale, offset = this._offset
+                sprite.pos,
+                size,
+                this.size,
+                scale = this.scale,
+                offset = this._offset
             )
-
+            
             # print(f'{pos = }')
-
+            
             image.alpha_composite(
                 sprite.image,
                 tuple([round(x) for x in pos]),
@@ -271,13 +278,17 @@ class Object(GameObject):
         image = Image.new('RGBA', tuple(this.size * this.scale), (0, 0, 0, 0))
 
         for sprite in this._foreground:
-            size = (numpy.array(sprite.image.size) / sprite.scale) * [1, -1]
+            size = (numpy.array(sprite.image.size) / sprite.scale) * [1,-1]
             pos = this.truePos(
-                sprite.pos, size, this.size, scale = this.scale, offset = this._offset
+                sprite.pos,
+                size,
+                this.size,
+                scale = this.scale,
+                offset = this._offset
             )
-
+            
             # print(f'{pos = }')
-
+            
             image.alpha_composite(
                 sprite.image,
                 tuple([round(x) for x in pos]),
@@ -335,18 +346,16 @@ class Object(GameObject):
         offset = numpy.array(offset) * [-1, 1]
 
         return offset
-
-    def rotatePoint(this,
-                    point: tuple = (0, 0),
-                    angle: float = None) -> tuple[float, float]:
+    
+    def rotatePoint(this, point : tuple = (0,0), angle : float = None) -> tuple[float,float]:
         """Rotate a point around (0,0)
 
         Args:
-            point (tuple, optional): Point to rotate. Defaults to (0,0).
+            point (tuple, optional): Point to rotate. Defaults to (0, 0).
             angle (float, optional): Angle to rotate. Defaults to Object `Angle` property.
 
         Returns:
-            tuple[float,float]: (x,y)
+            tuple[float, float]: (x, y)
         """
         if angle == None:
             if 'Angle' in this.properties:
@@ -358,8 +367,8 @@ class Object(GameObject):
             return point
 
         return rotate(point, degrees = -angle)
-
-    def rotateImage(this, image: Image.Image) -> Image.Image:
+    
+    def rotateImage(this, image : Image.Image) -> Image.Image:
         """Rotate an image the amount of degrees as the Object `Angle` property
 
         Args:
@@ -410,7 +419,7 @@ class Object(GameObject):
             'Sprites': this._getSprites,
             'UVs': this._getUVs,
             'VertIndices': this._getVertIndices,
-            'DefaultProperties': this._getDefaultProperties,
+            'DefaultProperties': this._getDefaultProperties
         }
 
         for element in this.xml:
@@ -420,8 +429,8 @@ class Object(GameObject):
                 tags[element.tag](element)
 
         this.getProperties()
-
-    def export(this, path: str = None) -> bytes:
+    
+    def export(this, path : str = None) -> bytes:
         """Export object XML
 
         Args:
@@ -433,8 +442,8 @@ class Object(GameObject):
         Returns:
             bytes: XML file.
         """
-        xml: etree.ElementBase = etree.Element('InteractiveObject')
-
+        xml : etree.ElementBase = etree.Element('InteractiveObject')
+        
         shapes = etree.Element('Shapes')
 
         for shape in this.shapes:
@@ -443,9 +452,9 @@ class Object(GameObject):
 
         if len(shapes) > 0:
             xml.append(shapes)
-
-        sprites: etree.ElementBase = etree.Element('Sprites')
-
+        
+        sprites : etree.ElementBase = etree.Element('Sprites')
+        
         for sprite in this.sprites:
             sprite: Sprite
             sprite.export()
@@ -453,40 +462,38 @@ class Object(GameObject):
 
         if len(sprites) > 0:
             xml.append(sprites)
-
-        UVs: etree.ElementBase = etree.Element('UVs')
-
+        
+        UVs : etree.ElementBase = etree.Element('UVs')
+        
         for UV in this.UVs:
             pos = ' '.join([str(_) for _ in UV])
             etree.SubElement(UVs, 'UV', {'pos': pos})
 
         if len(UVs) > 0:
             xml.append(UVs)
-
-        VertIndices: etree.ElementBase = etree.Element('VertIndices')
-
+        
+        VertIndices : etree.ElementBase = etree.Element('VertIndices')
+        
         for index in this.VertIndices:
             etree.SubElement(VertIndices, 'Vert', {'index': str(index)})
 
         if len(VertIndices) > 0:
             xml.append(VertIndices)
-
-        DefaultProperties: etree.ElementBase = etree.Element('DefaultProperties')
-
+        
+        DefaultProperties : etree.ElementBase = etree.Element('DefaultProperties')
+        
         for name in this.defaultProperties:
-            etree.SubElement(
-                DefaultProperties, 'Property',
-                {'name': name, 'value': this.defaultProperties[name]}
-            )
-
+            etree.SubElement(DefaultProperties, 'Property', {
+                'name': name,
+                'value': this.defaultProperties[name]
+            })
+        
         if len(DefaultProperties) > 0:
             xml.append(DefaultProperties)
 
         this.xml = xml
-        output = etree.tostring(
-            xml, pretty_print = True, xml_declaration = True, encoding = 'utf-8'
-        )
-
+        output = etree.tostring(xml, pretty_print=True, xml_declaration=True, encoding='utf-8')
+        
         if path == None:
             if this.filename:
                 path = this.filename
@@ -504,24 +511,24 @@ class Object(GameObject):
         return output
 
     def updateProperties(this):
-        """Update properties. Deletes any properties that are the same as defaultProperties, unless specified by the object type in the ObjectPack.
+        """Update properties.
         """
         type = this.Type
 
         if type != None:
             type.ready_properties()
-
+        
         # for property in properties:
         #     if property in this.defaultProperties:
         #         if this.properties[property] == this.defaultProperties[property]:
         #             del this.properties[property]
-
+        
         # if this.type != None:
         #     this.properties['Type'] = this.type
 
     def getLevelXML(
         this,
-        filename: str = None,
+        filename : str = None,
     ) -> etree.ElementBase:
         """Gets XML to be used in levels.
 
@@ -538,10 +545,8 @@ class Object(GameObject):
             this.filename = filename
 
         xml = etree.Element('Object', name = this.name)
-        etree.SubElement(
-            xml, 'AbsoluteLocation', value = ' '.join([str(_) for _ in this.pos])
-        )
-
+        etree.SubElement(xml, 'AbsoluteLocation', value = ' '.join([str(_) for _ in this.pos]))
+        
         properties = etree.SubElement(xml, 'Properties')
 
         this.updateProperties()
@@ -550,9 +555,9 @@ class Object(GameObject):
             value = this.properties[name]
 
             etree.SubElement(properties, 'Property', name = name, value = str(value))
-
+        
         this.getProperties()
-
+        
         return xml
 
     @property
@@ -579,13 +584,13 @@ class Object(GameObject):
         if not 'Type' in this.defaultProperties:
             this.defaultProperties['Type'] = value
         this.properties['Type'] = value
-
-    def _getShapes(this, xml: etree.ElementBase):
+    
+    def _getShapes(this, xml : etree.ElementBase):
         for element in xml:
             shape = Shape(element)
             this.shapes.append(shape)
-
-    def _getSprites(this, xml: etree.ElementBase):
+        
+    def _getSprites(this, xml : etree.ElementBase):
         for element in xml:
             if element is etree.Comment:
                 continue
@@ -603,19 +608,19 @@ class Object(GameObject):
                         properties = attributes,
                         scale = this.scale,
                         HD = this.HD,
-                        TabHD = this.TabHD,
+                        TabHD = this.TabHD
                     )
                     this.sprites.append(sprite)
-
-    def _getUVs(this, xml: etree.ElementBase):
+    
+    def _getUVs(this, xml : etree.ElementBase):
         for element in xml:
             if element is etree.Comment:
                 continue
             if element.tag == 'UV':
                 pos = element.get('pos')
                 this.UVs.append(tuple([float(_) for _ in pos.split()]))
-
-    def _getVertIndices(this, xml: etree.ElementBase):
+    
+    def _getVertIndices(this, xml : etree.ElementBase):
         for element in xml:
             if element is etree.Comment:
                 continue
@@ -639,8 +644,8 @@ class Object(GameObject):
         if this.Type:
             this.Type.ready_properties()
         return this.properties
-
-    def _getDefaultProperties(this, xml: etree.ElementBase):
+    
+    def _getDefaultProperties(this, xml : etree.ElementBase):
         for element in xml:
             if element is etree.Comment:
                 continue
@@ -649,8 +654,8 @@ class Object(GameObject):
                 value = element.get('value')
 
                 this.defaultProperties[name] = value
-
-    def setProperty(this, property: str | dict, value: str = ''):
+    
+    def setProperty(this, property : str | dict, value : str = ''):
         """Set object property.
 
         Args:
@@ -662,16 +667,21 @@ class Object(GameObject):
                 this.properties[name] = property[name]
             return
         this.properties[property] = value
-
+    
     def getAnimation(
         this,
-        duration: int = 0,
-        fps: float = 0,
-    ) -> dict[typing.Literal[
-        'fps',
-        'frame_duration',
-        'frames',
-    ], float | int | list[Image.Image]]:
+        duration : int = 0,
+        fps : float = 0,
+    ) -> dict[
+        typing.Literal[
+            'fps',
+            'frame_duration',
+            'frames',
+        ],
+        float |
+        int |
+        list[Image.Image]
+    ]:
         """Get the animation of this object
 
         Args:
@@ -689,8 +699,8 @@ class Object(GameObject):
 
         if (fps in [0, None]) or (fps <= 0):
             fps = math.lcm(*[int(sprite.fps) for sprite in this.sprites])
-
-        frames: list[Image.Image] = []
+        
+        frames : list[Image.Image] = []
         this.frame = 0
         frame = 0
         time = 0
@@ -721,19 +731,20 @@ class Object(GameObject):
             time += (1000 / fps) / 1000
 
         # frames = frames[:-1]
-
+        
         return {
             'fps': fps,
-            'frame_duration': (1000 / fps) / 1000,
-            'frames': frames,
-        }
-
+            'frame_duration' : (1000 / fps) / 1000,
+            'frames' : frames,
+         }
+        
     def saveGIF(
         this,
         filename = None,
-        duration: int = 0,
-        fps: float = 0,
+        duration : int = 0,
+        fps : float = 0,
     ):
+        
         """Save object as a gif.
 
         Args:
@@ -753,18 +764,18 @@ class Object(GameObject):
             filename = os.path.splitext(filename)[0] + '.gif'
 
             # print(f'{filename = }')
-
+        
         animation = this.getAnimation(
             duration = duration,
             fps = fps,
         )
-
+        
         return save_transparent_gif(
             animation['frames'],
             durations = animation['frame_duration'],
             save_file = filename,
         )
-
+    
     def copy(self) -> Self:
         """Creates a copy of this object (aka, get the object again).
 
@@ -834,12 +845,12 @@ class Shape(GameObject):
         Returns:
             PIL.Image.Image: PIL Image
         """
-        points = numpy.array(this.points).swapaxes(0, 1)
-
+        points = numpy.array(this.points).swapaxes(0,1)
+        
         min = numpy.array([math.floor(v.min()) for v in points])
         max = numpy.array([math.ceil(v.max()) for v in points])
-
-        offset = numpy.array([a.mean() for a in numpy.array([min, max]).swapaxes(0, 1)])
+        
+        offset = numpy.array([a.mean() for a in numpy.array([min,max]).swapaxes(0,1)])
         # offset = offset * [1,-1]
         # print(f'{offset = }')
 
@@ -847,7 +858,7 @@ class Shape(GameObject):
 
         image = Image.new('1', tuple([math.ceil(x) + 1 for x in size]), 1)
         draw = ImageDraw.Draw(image)
-
+        
         # size = size * [1,-1]
         # print(f'{size = }')
         for n in range(len(this.points)):
@@ -858,16 +869,19 @@ class Shape(GameObject):
             # line = line * [1,-1]
             line = numpy.array(this.truePos(
                 line,
-                (1, 1),
+                (1,1),
                 size,
                 offset,
             ))
-
+            
             # print(line)
 
             line = line.flatten()
             line = tuple([round(x) for x in line])
-
-            draw.line(line, fill = 0, width = 1)
-
+            
+            
+            draw.line(line, fill=0, width=1)
+        
         return image
+    
+    

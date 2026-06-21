@@ -11,10 +11,12 @@ class Layout(GameObject):
         filesystem: Filesystem | Folder = None,
         gamepath: str = None,
         assets: str = '/assets',
-        baseassets: str = '/',
+        baseassets: str = '/'
     ) -> None:
         super().__init__(filesystem, gamepath, assets, baseassets)
 
         this.filename = ''
 
         get_widget('test').widget
+        
+        

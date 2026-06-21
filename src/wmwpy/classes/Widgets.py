@@ -41,3 +41,5 @@ class Widgets():
                 this.widgets.append(widget)
             else:
                 this.comments.append(w)
+        
+    

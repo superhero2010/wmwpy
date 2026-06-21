@@ -29,3 +29,5 @@ def get_object_pack(name: str = 'WMW') -> ObjectPack | None:
 from .WMW import WMWObjectPack
 
 register_object_pack('WMW', WMWObjectPack)
+
+

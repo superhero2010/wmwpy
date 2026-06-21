@@ -8,20 +8,18 @@ from ..utils.XMLTools import strbool
 from ..utils.path import joinPath
 from ..gameobject import GameObject
 
-
 class Setting():
-
     def __init__(
         self,
-        xml: etree.ElementBase = None,
-        name: str = '',
-        properties: dict[str, str] = {},
+        xml : etree.ElementBase = None,
+        name : str = '',
+        properties : dict[str,str] = {},
     ) -> None:
-        self.xml: etree.ElementBase = xml
-
+        self.xml : etree.ElementBase = xml
+        
         properties['name'] = name
-        self.properties: dict[str, str] = deepcopy(properties)
-
+        self.properties : dict[str,str] = deepcopy(properties)
+        
         self.readXML()
 
     def readXML(self):
@@ -73,7 +71,6 @@ class Setting():
     def wrapV(self, value: str):
         self.properties['wrapV'] = value
 
-
 class TextureSettings(GameObject):
 
     def __init__(
@@ -82,18 +79,16 @@ class TextureSettings(GameObject):
         filesystem: Filesystem | Folder = None,
         gamepath: str = None,
         assets: str = '/assets',
-        baseassets: str = '/',
+        baseassets: str = '/'
     ) -> None:
         super().__init__(filesystem, gamepath, assets, baseassets)
 
         if file == None:
-            file = self.filesystem.get(
-                joinPath(
-                    self.baseassets,
-                    '/Data/textureSettings.xml',
-                )
-            )
-
+            file = self.filesystem.get(joinPath(
+                self.baseassets,
+                '/Data/textureSettings.xml',
+            ))
+            
             # print(f'{file}')
             # print(joinPath(
             #     this.baseassets,
@@ -112,8 +107,8 @@ class TextureSettings(GameObject):
         if self.file != None:
             self.xml: etree.ElementBase = etree.parse(self.file).getroot()
 
-        self.settings: list[Setting] = []
-
+        self.settings : list[Setting] = []
+        
         self.read()
 
     def read(self):
@@ -128,9 +123,11 @@ class TextureSettings(GameObject):
                 continue
 
             if element.tag == 'Texture':
-                self.settings.append(Setting(element, ))
-
-    def get(self, name: str) -> Setting:
+                self.settings.append(Setting(
+                    element,
+                ))
+    
+    def get(self, name : str) -> Setting:
         name = os.path.splitext(name)[0]
 
         for texture in self.settings:
@@ -138,17 +135,14 @@ class TextureSettings(GameObject):
                 return texture
 
         return self.add(name)
-
+    
     def add(
         self,
-        name: str,
-        properties: dict[str, str] | Setting = {},
+        name : str,
+        properties : dict[str,str] | Setting = {},
     ):
         if isinstance(properties, dict):
-            setting = Setting(
-                name = name,
-                properties = properties,
-            )
+            setting = Setting(name = name, properties = properties)
         elif isinstance(properties, Setting):
             setting = properties
         else:

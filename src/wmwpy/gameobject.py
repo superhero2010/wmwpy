@@ -9,7 +9,7 @@ import math
 class GameObject():
 
     def __init__(
-        this,
+        self,
         filesystem: Filesystem | Folder = None,
         gamepath: str = None,
         assets: str = '/assets',
@@ -23,33 +23,33 @@ class GameObject():
             assets (str, optional): Assets path relative to game path. Only used if filesystem not specified. Defaults to '/assets'.
             baseassets (str, optional): Base assets path within the assets folder, e.g. `/perry/` in wmp. Defaults to `/`.
         """
-        this.gamepath = gamepath
-        this.assets = assets
-        if this.assets == None:
-            this.assets = '/assets'
-        this.baseassets = baseassets
+        self.gamepath = gamepath
+        self.assets = assets
+        if self.assets == None:
+            self.assets = '/assets'
+        self.baseassets = baseassets
 
         # try:
-        this.filesystem = filesystem
-        if isinstance(this.filesystem, Filesystem):
-            this.gamepath = this.filesystem.gamepath
-            this.assets = this.filesystem.assets
+        self.filesystem = filesystem
+        if isinstance(self.filesystem, Filesystem):
+            self.gamepath = self.filesystem.gamepath
+            self.assets = self.filesystem.assets
 
-        elif isinstance(this.filesystem, Folder):
+        elif isinstance(self.filesystem, Folder):
             pass
 
-        elif hasattr(this.filesystem, 'filesystem'):
-            this.filesystem = this.filesystem.filesystem
+        elif hasattr(self.filesystem, 'filesystem'):
+            self.filesystem = self.filesystem.filesystem
 
-        elif this.gamepath:
-            this.filesystem = Filesystem(this.gamepath, this.assets)
-            this.filesystem.getAssets()
+        elif self.gamepath:
+            self.filesystem = Filesystem(self.gamepath, self.assets)
+            self.filesystem.getAssets()
         # except Exception as e:
         #     print(f'Error: {str(e)}')
         #     raise FileNotFoundError('Must have a valid `filesystem` or `gamepath`')
 
     def get_file(
-        this,
+        self,
         file: bytes | File | io.BytesIO | str,
         template: str | io.BytesIO = None,
     ) -> io.BytesIO | str:
@@ -71,7 +71,7 @@ class GameObject():
             fileio = file.rawdata
         elif file == None:
             if template != None:
-                return this.get_file(template)
+                return self.get_file(template)
             else:
                 return None
         elif not hasattr(file, 'read') and not isinstance(file, str):
@@ -82,7 +82,7 @@ class GameObject():
         return fileio
 
     def truePos(
-        this,
+        self,
         pos: tuple[int, int] = (0, 0),
         obj_size: tuple[int, int] = (0, 0),
         parent_size: tuple[int, int] = (0, 0),

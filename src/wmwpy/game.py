@@ -41,7 +41,7 @@ class Game():
     game = 'WMW'
 
     def __init__(
-        this,
+        self,
         gamepath: str,
         assets: str = '/assets',
         db: str = '/Data/water.db',
@@ -124,33 +124,33 @@ class Game():
         if gamepath == None:
             return
 
-        this.gamepath = os.path.abspath(gamepath)
-        # print(f'{gamepath = }\n{this.gamepath = }')
-        this.assets = assets
-        this.db = db or this._DB
-        this.profile = profile or this._PROFILE
-        this.baseassets = baseassets or this._BASEASSETS
-        this.platform = platform
+        self.gamepath = os.path.abspath(gamepath)
+        # print(f'{gamepath = }\n{self.gamepath = }')
+        self.assets = assets
+        self.db = db or self._DB
+        self.profile = profile or self._PROFILE
+        self.baseassets = baseassets or self._BASEASSETS
+        self.platform = platform
 
-        this.level_materials = deepcopy(level_materials or this._LEVEL_MATERIALS)
+        self.level_materials = deepcopy(level_materials or self._LEVEL_MATERIALS)
 
-        this.object_pack = object_packs.get_object_pack(this.game)
+        self.object_pack = object_packs.get_object_pack(self.game)
 
-        this.updateFilesystem(load_callback = load_callback)
+        self.updateFilesystem(load_callback = load_callback)
 
     def updateFilesystem(
-        this, load_callback: typing.Callable[[int, str, int], typing.Any] = None
+        self, load_callback: typing.Callable[[int, str, int], typing.Any] = None
     ):
         """Update the current filesystem.
 
         Args:
             load_callback (Callable[[int, str, int], typing.Any], optional): A callback to be ran while loading the filesystem. Defaults to None.
         """
-        this.filesystem = Filesystem(this.gamepath, this.assets)
-        this.filesystem.getAssets(load_callback = load_callback)
+        self.filesystem = Filesystem(self.gamepath, self.assets)
+        self.filesystem.getAssets(load_callback = load_callback)
 
     def dump(
-        this,
+        self,
         folder = None,
         callback: typing.Callable[[int, str, int], typing.Any] = None,
     ):
@@ -160,10 +160,10 @@ class Game():
             folder (str, optional): Path to output directory. Defaults to original path.
             callback (Callable[[int, str, int], Any], optional): A callback function to be ran while dumping the filesystem. Defaults to None.
         """
-        this.filesystem.dump(folder = folder, callback = callback)
+        self.filesystem.dump(folder = folder, callback = callback)
 
     def Level(
-        this,
+        self,
         xmlPath: str = None,
         imagePath: str = None,
         load_callback: typing.Callable[[int, str, int], typing.Any] = None,
@@ -189,9 +189,9 @@ class Game():
         """
         logging.debug(f'Game: xml input: {xmlPath}')
 
-        levels = this.filesystem.get(joinPath(this.baseassets, '/Levels'))
+        levels = self.filesystem.get(joinPath(self.baseassets, '/Levels'))
         if levels == None:
-            levels = this.filesystem
+            levels = self.filesystem
 
         if isinstance(xmlPath, File):
             xml = xmlPath
@@ -226,12 +226,12 @@ class Game():
             logging.debug(f'Game: xml path: {xml.path}')
 
         if object_pack == None:
-            object_pack = this.object_pack
+            object_pack = self.object_pack
 
         level = Level(
             xml = xml,
             image = image,
-            filesystem = this.filesystem,
+            filesystem = self.filesystem,
             load_callback = load_callback,
             ignore_errors = ignore_errors,
             HD = HD,
@@ -246,7 +246,7 @@ class Game():
         return level
 
     def Object(
-        this,
+        self,
         object: str,
         HD: bool = False,
         TabHD: bool = False,
@@ -266,19 +266,19 @@ class Game():
             classes.object.Object: Where's My Water? object.
         """
 
-        objects = this.filesystem.get(joinPath(this.baseassets, '/Objects'))
+        objects = self.filesystem.get(joinPath(self.baseassets, '/Objects'))
         if objects == None:
-            objects = this.filesystem
+            objects = self.filesystem
 
         if not isinstance(object, File):
             object = objects.get(object)
 
         if object_pack == None:
-            object_pack = this.object_pack
+            object_pack = self.object_pack
 
         obj = Object(
             object,
-            filesystem = this.filesystem,
+            filesystem = self.filesystem,
             HD = HD,
             TabHD = TabHD,
             object_pack = object_pack,
@@ -292,7 +292,7 @@ class Game():
         return obj
 
     def Imagelist(
-        this, imagelist: str = None, HD = False, TabHD = False, save_images = False
+        self, imagelist: str = None, HD = False, TabHD = False, save_images = False
     ):
         """
         Load imagelist
@@ -307,9 +307,9 @@ class Game():
             classes.imagelist.Imagelist: Imagelist object.
         """
 
-        textures = this.filesystem.get(joinPath(this.baseassets, '/Textures'))
+        textures = self.filesystem.get(joinPath(self.baseassets, '/Textures'))
         if textures == None:
-            textures = this.filesystem
+            textures = self.filesystem
 
         if not isinstance(imagelist, File):
             if isinstance(imagelist, str):
@@ -321,7 +321,7 @@ class Game():
 
         imagelistObject = Imagelist(
             imagelist,
-            filesystem = this.filesystem,
+            filesystem = self.filesystem,
             HD = HD,
             TabHD = TabHD,
             save_images = save_images,
@@ -329,7 +329,7 @@ class Game():
 
         return imagelistObject
 
-    def Sprite(this, sprite: str, HD = False, TabHD = False, **kwargs):
+    def Sprite(self, sprite: str, HD = False, TabHD = False, **kwargs):
         """
         Loads sprite.
 
@@ -342,15 +342,15 @@ class Game():
             classes.sprite.Sprite: Sprite object.
         """
 
-        sprites = this.filesystem.get(joinPath(this.baseassets, '/Sprites'))
+        sprites = self.filesystem.get(joinPath(self.baseassets, '/Sprites'))
         if sprites == None:
-            sprites = this.filesystem
+            sprites = self.filesystem
 
         if not isinstance(sprite, File):
             sprite = sprites.get(sprite)
 
         spriteObject = Sprite(
-            sprite, filesystem = this.filesystem, HD = HD, TabHD = TabHD, **kwargs
+            sprite, filesystem = self.filesystem, HD = HD, TabHD = TabHD, **kwargs
         )
         if isinstance(sprite, File):
             spriteObject.filename = sprite.path
@@ -360,7 +360,7 @@ class Game():
         return spriteObject
 
     def Texture(
-        this,
+        self,
         texture: str | File,
         HD = False,
         TabHD = False,
@@ -377,24 +377,24 @@ class Game():
             utils.textures.Texture: Texture object.
         """
 
-        textures = this.filesystem.get(joinPath(this.baseassets, '/Textures'))
+        textures = self.filesystem.get(joinPath(self.baseassets, '/Textures'))
         if textures == None:
-            textures = this.filesystem
+            textures = self.filesystem
 
         if isinstance(texture, str):
             texture = textures.get(texture)
 
         return Texture(
             texture,
-            filesystem = this.filesystem,
+            filesystem = self.filesystem,
             HD = HD,
             TabHD = TabHD,
         )
 
-    def Layout(this, layout: str):
+    def Layout(self, layout: str):
         raise NotImplementedError('load layout is not implemented yet.')
 
-    def Location(this, location: str) -> Location:
+    def Location(self, location: str) -> Location:
         """Load Location in `WMW2`
 
         Args:
@@ -403,22 +403,22 @@ class Game():
         Returns:
             Location: wmwpy Location object.
         """
-        locations = this.filesystem.get(joinPath(this.baseassets, '/Locations'))
+        locations = self.filesystem.get(joinPath(self.baseassets, '/Locations'))
         if locations == None:
-            locations = this.filesystem
+            locations = self.filesystem
 
         if isinstance(location, str):
             location = locations.get(location)
 
         return Location(
             location,
-            filesystem = this.filesystem,
-            gamepath = this.gamepath,
-            assets = this.assets,
-            baseassets = this.baseassets,
+            filesystem = self.filesystem,
+            gamepath = self.gamepath,
+            assets = self.assets,
+            baseassets = self.baseassets,
         )
 
-    def Database(this, path: str = None) -> Database:
+    def Database(self, path: str = None) -> Database:
         """Load the game database.
 
         Args:
@@ -428,36 +428,36 @@ class Game():
             Database: Game Database object.
         """
         if path == None:
-            path = this.db
+            path = self.db
 
-        file = this.filesystem.get(path)
+        file = self.filesystem.get(path)
 
         return Database(file)
 
-    def TextureSettings(this, path: str = None):
+    def TextureSettings(self, path: str = None):
         if path == None:
-            file = this.filesystem.get(
-                joinPath(this.baseassets, '/Data/textureSettings.xml')
+            file = self.filesystem.get(
+                joinPath(self.baseassets, '/Data/textureSettings.xml')
             )
         elif isinstance(path, str):
-            file = this.filesystem.get(path)
+            file = self.filesystem.get(path)
         elif isinstance(path, File):
             file = path
         else:
-            file = this.filesystem.get(
-                joinPath(this.baseassets, '/Data/textureSettings.xml')
+            file = self.filesystem.get(
+                joinPath(self.baseassets, '/Data/textureSettings.xml')
             )
 
         return TextureSettings(
             file,
-            filesystem = this.filesystem,
-            assets = this.assets,
-            gamepath = this.gamepath,
-            baseassets = this.baseassets,
+            filesystem = self.filesystem,
+            assets = self.assets,
+            gamepath = self.gamepath,
+            baseassets = self.baseassets,
         )
 
     def FileManifest(
-        this,
+        self,
         writeFile: bool = True,
         filename: str = '/FileManifest.txt',
     ):
@@ -470,9 +470,9 @@ class Game():
         Returns:
             str: Contents of `FileManifest.txt`
         """
-        manifest = '\n'.join(this.filesystem.listdir(recursive = True))
+        manifest = '\n'.join(self.filesystem.listdir(recursive = True))
 
         if writeFile:
-            this.filesystem.add(filename, manifest, replace = True)
+            self.filesystem.add(filename, manifest, replace = True)
 
         return manifest

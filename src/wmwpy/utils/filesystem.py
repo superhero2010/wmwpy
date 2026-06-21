@@ -118,8 +118,8 @@ class Filesystem():
                     count += 1
             return count
 
-        # print(this.gamepath)
-        # print(f'{this.gamepath = }\n{this.assets = }')
+        # print(self.gamepath)
+        # print(f'{self.gamepath = }\n{self.assets = }')
 
         assets = pathlib.Path(joinPath(self.gamepath, self.assets))
 
@@ -511,34 +511,34 @@ class File(FileBase):
 
         self.content = reader.read(self.mime, self.extension, self.rawdata, **kwargs)
 
-        # if this.mime == 'image/waltex':
-        #     this.content = Waltex(this.rawcontent.getvalue())
-        #     this.image = this.content.image
+        # if self.mime == 'image/waltex':
+        #     self.content = Waltex(self.rawcontent.getvalue())
+        #     self.image = self.content.image
 
-        # elif this.mime.startswith('image/'):
-        #     this.content = Image.open(this.rawcontent.getvalue())
-        #     this.image = this.content
+        # elif self.mime.startswith('image/'):
+        #     self.content = Image.open(self.rawcontent.getvalue())
+        #     self.image = self.content
 
-        # elif this.extension == 'zip':
-        #     this.content = zipfile.ZipFile(this.rawcontent)
+        # elif self.extension == 'zip':
+        #     self.content = zipfile.ZipFile(self.rawcontent)
         #     if 'extract' in kwargs and kwargs['extract']:
-        #         print(f'extracting {this.name}')
+        #         print(f'extracting {self.name}')
 
-        #         files = this.content.namelist()
+        #         files = self.content.namelist()
         #         for f in files:
         #             print(f)
 
-        #             content = this.content.read(f)
-        #             this.root.add(f, content, replace = True)
+        #             content = self.content.read(f)
+        #             self.root.add(f, content, replace = True)
 
-        # elif this.mime.startswith('text/'):
-        #     if this.extension == 'imagelist':
-        #         this.content = Imageutils.Imagelist(this.rawcontent.getvalue(), this.root, **kwargs)
+        # elif self.mime.startswith('text/'):
+        #     if self.extension == 'imagelist':
+        #         self.content = Imageutils.Imagelist(self.rawcontent.getvalue(), self.root, **kwargs)
         #         # I need to make Imagelist() accept a Folder or Filesystem, and raw file data.
         #         # raise NotImplementedError('Imagelist reading is currently not implemented yet.')
-        #         # this.content = Imageutils.Imagelist()
+        #         # self.content = Imageutils.Imagelist()
         #     else:
-        #         this.content = this.rawcontent.read().decode(encoding=kwargs['encoding'])
+        #         self.content = self.rawcontent.read().decode(encoding=kwargs['encoding'])
 
         self.rawdata.seek(0)
 

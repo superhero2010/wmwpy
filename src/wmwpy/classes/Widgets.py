@@ -8,36 +8,36 @@ from .widget import Widget
 class Widgets():
 
     def __init__(
-        this,
+        self,
         element: etree.Element,
         gamePath: str,
         screenSize = (),
         texturePath: str = None,
         baseLayoutFile: str = None
     ) -> None:
-        this.element = element
+        self.element = element
 
-        this.attributes = this.element.attrib
+        self.attributes = self.element.attrib
 
         if not texturePath:
-            texturePath = this.attributes['texturePath']
-        this.texturePath = texturePath
+            texturePath = self.attributes['texturePath']
+        self.texturePath = texturePath
 
         if not baseLayoutFile:
-            baseLayoutFile = this.attributes['baseLayoutFile']
-        this.baseLayoutFile = baseLayoutFile
+            baseLayoutFile = self.attributes['baseLayoutFile']
+        self.baseLayoutFile = baseLayoutFile
 
-        this.gamePath = gamePath
+        self.gamePath = gamePath
 
-        this.widgets = []
-        this.comments = []
+        self.widgets = []
+        self.comments = []
 
-        this.getWidgets()
+        self.getWidgets()
 
-    def getWidgets(this):
-        for w in this.element:
+    def getWidgets(self):
+        for w in self.element:
             if not isinstance(w, etree.Comment):
-                widget = Widget(w, this.texturePath)
-                this.widgets.append(widget)
+                widget = Widget(w, self.texturePath)
+                self.widgets.append(widget)
             else:
-                this.comments.append(w)
+                self.comments.append(w)

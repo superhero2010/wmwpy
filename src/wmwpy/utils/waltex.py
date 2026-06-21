@@ -99,7 +99,7 @@ class Waltex():
     format_description = "Walaber image file"
 
     def __init__(
-        this,
+        self,
         file: str | bytes,
         byte_order: str = 'little',
     ) -> None:
@@ -113,7 +113,7 @@ class Waltex():
             TypeError: file has to be a 'str', 'bytes' or file-like object.
         """
 
-        this._colorspecs = [
+        self._colorspecs = [
             {
                 'order': 'rgba',
                 'bpp': [8, 8, 8, 8],
@@ -154,14 +154,14 @@ class Waltex():
         else:
             raise TypeError(f"file has to be a 'str', 'bytes' or file-like object.")
 
-        this._byte_order = byte_order
+        self._byte_order = byte_order
 
-        this.file = file
-        this.rawdata = io.BytesIO(rawdata)
+        self.file = file
+        self.rawdata = io.BytesIO(rawdata)
 
-        this.read()
+        self.read()
 
-    def read(this, byte_order: str = None) -> Image.Image:
+    def read(self, byte_order: str = None) -> Image.Image:
         """Read the waltex image.
 
         Args:
@@ -171,42 +171,42 @@ class Waltex():
             PIL.Image.Image: PIL Image object
         """
         if byte_order:
-            this._byte_order = byte_order
+            self._byte_order = byte_order
 
-        header = this.rawdata.getvalue()[0:16]
+        header = self.rawdata.getvalue()[0:16]
 
-        this.format = int(header[5])
-        this.colorspec = this._colorspecs[this.format]
-        this.version = int(header[4])
+        self.format = int(header[5])
+        self.colorspec = self._colorspecs[self.format]
+        self.version = int(header[4])
         size = (
             int.from_bytes(header[6:8], byteorder = 'little'),
             int.from_bytes(header[8:10], byteorder = 'little')
         )
-        this.image = Image.new('RGBA', size)
+        self.image = Image.new('RGBA', size)
 
         if not byte_order:
-            this._byte_order = this.colorspec['byte_order']
+            self._byte_order = self.colorspec['byte_order']
 
         try:
-            this.image = Image.open(this.rawdata)
-            if this._byte_order == 'little':
-                A, B, G, R = this.image.split()
-                this.image = Image.merge('RGBA', (R, G, B, A))
+            self.image = Image.open(self.rawdata)
+            if self._byte_order == 'little':
+                A, B, G, R = self.image.split()
+                self.image = Image.merge('RGBA', (R, G, B, A))
         except:
-            this.image = WaltexImage(this.rawdata, byte_order = this._byte_order)
+            self.image = WaltexImage(self.rawdata, byte_order = self._byte_order)
 
-        this.image.format = _WaltexImageFile.format
-        this.image.format_description = _WaltexImageFile.format_description
-        return this.image
+        self.image.format = _WaltexImageFile.format
+        self.image.format_description = _WaltexImageFile.format_description
+        return self.image
 
     @property
-    def size(this):
+    def size(self):
         """Return size of image
 
         Returns:
             tuple[int,int]: tuple(width, height)
         """
-        return this.image.size
+        return self.image.size
 
 
 # legacy functions for reading waltex image

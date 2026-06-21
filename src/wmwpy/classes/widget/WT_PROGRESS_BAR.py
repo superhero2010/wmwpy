@@ -9,7 +9,7 @@ class WT_PROGRESS_BAR(Widget):
         Progress bar
     """
 
-    def __init__(this, *args, **kwargs) -> None:
+    def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
 
 

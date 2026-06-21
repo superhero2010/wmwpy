@@ -96,7 +96,7 @@ class TextureSettings(GameObject):
 
             # print(f'{file}')
             # print(joinPath(
-            #     this.baseassets,
+            #     self.baseassets,
             #     '/Data/textureSettings.xml',
             # ))
 

@@ -7,7 +7,7 @@ from ..utils.filesystem import *
 class Database(GameObject):
 
     def __init__(
-        this,
+        self,
         database: str | bytes | File,
         filesystem: Filesystem | Folder = None,
         gamepath: str = None,
@@ -25,45 +25,45 @@ class Database(GameObject):
         """
         super().__init__(filesystem, gamepath, assets, baseassets)
 
-        this.connection = None
+        self.connection = None
 
-        this.filename = 'water.db'
+        self.filename = 'water.db'
 
         if isinstance(database, File):
-            this.connection = database.read(mime = 'application/x-sqlite3')
-            this.filename = database.path
+            self.connection = database.read(mime = 'application/x-sqlite3')
+            self.filename = database.path
         elif isinstance(database, str):
             file = File(None, 'water.db', bytes(database))
-            this.connection = file.read()
+            self.connection = file.read()
         elif isinstance(database, bytes):
             file = File(None, 'water.db', database)
-            this.connection = file.read()
+            self.connection = file.read()
         else:
-            this.connection(':memory:')
+            self.connection(':memory:')
 
     @property
-    def connection(this) -> sqlite3.Connection:
+    def connection(self) -> sqlite3.Connection:
         """The sqlite3 python database object.
 
         Returns:
             sqlite3.Connection: sqlite3 database connection
         """
-        return this._connection
+        return self._connection
 
     @connection.setter
-    def connection(this, connection: sqlite3.Connection):
+    def connection(self, connection: sqlite3.Connection):
         if connection == None:
-            this._connection = None
-            this.cursor = None
+            self._connection = None
+            self.cursor = None
             return
 
         if not isinstance(connection, sqlite3.Connection):
             raise TypeError('connection must be sqlite3.Connection')
 
-        this._connection = connection
-        this.cursor = this._connection.cursor()
+        self._connection = connection
+        self.cursor = self._connection.cursor()
 
-    def export(this, filename: str = None) -> bytes:
+    def export(self, filename: str = None) -> bytes:
         """Export the database into the filesystem.
 
         Args:
@@ -73,20 +73,20 @@ class Database(GameObject):
             bytes: Output file in bytes.
         """
         if filename == None:
-            filename = this.filename
+            filename = self.filename
         else:
-            this.filename = filename
+            self.filename = filename
 
-        file = this.filesystem.get(filename)
+        file = self.filesystem.get(filename)
 
         if file == None:
             file = File(None, 'water.db', b'')
 
-        data = file.write(this.connection)
+        data = file.write(self.connection)
 
         return file.rawdata.getvalue()
 
-    def execute(this, *args):
+    def execute(self, *args):
         """Execute sql on the database. See sqlite3.Cursor.execute for parameters.
 
         Args:
@@ -95,4 +95,4 @@ class Database(GameObject):
         Returns:
             sqlite3.Cursor: The sqlite3 Cursor object.
         """
-        return this.cursor.execute(*args)
+        return self.cursor.execute(*args)

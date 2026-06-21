@@ -9,7 +9,7 @@ class WT_GROUP(Widget):
         Group for widgets?
     """
 
-    def __init__(this, *args, **kwargs) -> None:
+    def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
 
 

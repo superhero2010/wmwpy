@@ -108,7 +108,7 @@ class WMW(Game):
     game = 'WMW'
 
     def __init__(
-        this,
+        self,
         gamepath: str,
         assets: str = '/assets',
         db: str = '/Data/water.db',
@@ -133,7 +133,7 @@ class WMWF(WMW):
     game = 'WMWF'
 
     def __init__(
-        this,
+        self,
         gamepath: str,
         assets: str = '/assets',
         db: str = '/Data/water-Lite.db',
@@ -210,7 +210,7 @@ class WMP(Game):
     game = 'WMP'
 
     def __init__(
-        this,
+        self,
         gamepath: str,
         assets: str = '/assets',
         db: str = '/Perry/Data/water.db',
@@ -234,7 +234,7 @@ class WMPF(WMP):
     game = 'WMPF'
 
     def __init__(
-        this,
+        self,
         gamepath: str,
         assets: str = '/assets',
         db: str = '/Perry/Data/water-Lite.db',
@@ -317,7 +317,7 @@ class WMM(Game):
     game = 'WMM'
 
     def __init__(
-        this,
+        self,
         gamepath: str,
         assets: str = '/assets',
         db: str = '/Mickey/Data/perry.db',
@@ -341,7 +341,7 @@ class WMMF(WMM):
     game = 'WMMF'
 
     def __init__(
-        this,
+        self,
         gamepath: str,
         assets: str = '/assets',
         db: str = '/Mickey/Data/perry-Lite.db',
@@ -403,7 +403,7 @@ class WMXYY(Game):
     game = 'WMXYY'
 
     def __init__(
-        this,
+        self,
         gamepath: str,
         assets: str = '/assets',
         db: str = '/Perry/Data/water.db',
@@ -465,7 +465,7 @@ class WMWFXYY(Game):
     game = 'WMWFXYY'
 
     def __init__(
-        this,
+        self,
         gamepath: str,
         assets: str = '/assets',
         db: str = '/Perry/Data/water.db',
@@ -548,7 +548,7 @@ class WMW2(Game):
     game = 'WMW2'
 
     def __init__(
-        this,
+        self,
         gamepath: str,
         assets: str = '/assets',
         db: str = '/Water/Data/perry.db',
@@ -575,7 +575,7 @@ class WMH(Game):
     game = 'WMH'
 
     def __init__(
-        this,
+        self,
         gamepath: str,
         assets: str = '/assets',
         db: str = '/Data/water-Lite.db',
@@ -592,7 +592,7 @@ class WMH(Game):
             load_callback = load_callback
         )
 
-    def mode(this, mode: typing.Literal['wmw', 'wmp'] = 'wmw'):
+    def mode(self, mode: typing.Literal['wmw', 'wmp'] = 'wmw'):
         """Switch game mode from 'wmw' to 'wmp' and vice verca.
 
         Args:
@@ -601,30 +601,30 @@ class WMH(Game):
 
         mode = mode.lower()
         if mode == 'wmw':
-            this._DB = WMWF._DB
-            this._BASEASSETS = WMWF._BASEASSETS
-            this._LEVEL_MATERIALS = deepcopy(WMWF._LEVEL_MATERIALS)
+            self._DB = WMWF._DB
+            self._BASEASSETS = WMWF._BASEASSETS
+            self._LEVEL_MATERIALS = deepcopy(WMWF._LEVEL_MATERIALS)
 
-            this.db = this._DB
-            this.baseassets = this._BASEASSETS
-            this.level_materials = deepcopy(this._LEVEL_MATERIALS)
+            self.db = self._DB
+            self.baseassets = self._BASEASSETS
+            self.level_materials = deepcopy(self._LEVEL_MATERIALS)
         elif mode == 'wmp':
-            this._DB = WMPF._DB
-            this._BASEASSETS = WMPF._BASEASSETS
-            this._LEVEL_MATERIALS = deepcopy(WMPF._LEVEL_MATERIALS)
+            self._DB = WMPF._DB
+            self._BASEASSETS = WMPF._BASEASSETS
+            self._LEVEL_MATERIALS = deepcopy(WMPF._LEVEL_MATERIALS)
 
-        this.db = this._DB
-        this.baseassets = this._BASEASSETS
-        this.level_materials = deepcopy(this._LEVEL_MATERIALS)
+        self.db = self._DB
+        self.baseassets = self._BASEASSETS
+        self.level_materials = deepcopy(self._LEVEL_MATERIALS)
 
-        this.filesystem.baseassets = this.baseassets
+        self.filesystem.baseassets = self.baseassets
 
 
 class WMS(WMPF):
     game = 'WMS'
 
     def __init__(
-        this,
+        self,
         gamepath: str,
         assets: str = '/Content',
         db: str = '/Perry/Data/water-Lite.db',

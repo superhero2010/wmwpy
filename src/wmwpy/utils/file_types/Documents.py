@@ -12,10 +12,10 @@ class ImagelistFile(filesystem.Reader):
     MIME = 'text/imagelist'
     EXTENSION = 'imagelist'
 
-    def check(this, mime: str, extension: str, rawdata: io.BytesIO, **kwargs):
-        return extension == this.EXTENSION or mime == this.MIME
+    def check(self, mime: str, extension: str, rawdata: io.BytesIO, **kwargs):
+        return extension == self.EXTENSION or mime == self.MIME
 
-    def read(this, mime: str, extension: str, rawdata: io.BytesIO, **kwargs):
+    def read(self, mime: str, extension: str, rawdata: io.BytesIO, **kwargs):
         return Imagelist(rawdata.getvalue(), **kwargs)
 
 
@@ -23,10 +23,10 @@ class SpriteFile(filesystem.Reader):
     MIME = 'text/sprite'
     EXTENSION = 'sprite'
 
-    def check(this, mime: str, extension: str, rawdata: io.BytesIO, **kwargs):
-        return mime == this.MIME or extension == this.EXTENSION
+    def check(self, mime: str, extension: str, rawdata: io.BytesIO, **kwargs):
+        return mime == self.MIME or extension == self.EXTENSION
 
-    def read(this, mime: str, extension: str, rawdata: io.BytesIO, **kwargs):
+    def read(self, mime: str, extension: str, rawdata: io.BytesIO, **kwargs):
         return Sprite()
 
 
@@ -34,10 +34,10 @@ class ObjectFile(filesystem.Reader):
     MIME = 'text/hs'
     EXTENSION = 'hs'
 
-    def check(this, mime: str, extension: str, rawdata: io.BytesIO, **kwargs):
-        return mime == this.MIME or extension == this.EXTENSION
+    def check(self, mime: str, extension: str, rawdata: io.BytesIO, **kwargs):
+        return mime == self.MIME or extension == self.EXTENSION
 
-    def read(this, mime: str, extension: str, rawdata: io.BytesIO, **kwargs):
+    def read(self, mime: str, extension: str, rawdata: io.BytesIO, **kwargs):
         return Object()
 
 
@@ -45,11 +45,11 @@ class XMLFile(filesystem.Reader):
     MIME = 'text/xml'
     EXTENSION = 'xml'
 
-    def check(this, mime: str, extension: str, rawdata: io.BytesIO, **kwargs):
-        return extension == this.EXTENSION or mime == this.MIME
+    def check(self, mime: str, extension: str, rawdata: io.BytesIO, **kwargs):
+        return extension == self.EXTENSION or mime == self.MIME
 
     def read(
-        this, mime: str, extension: str, rawdata: io.BytesIO, **kwargs
+        self, mime: str, extension: str, rawdata: io.BytesIO, **kwargs
     ) -> etree.ElementBase:
         return etree.parse(rawdata).getroot()
 
@@ -58,10 +58,10 @@ class DatabaseFile(filesystem.Reader):
     MIME = 'application/x-sqlite3'
     EXTENSION = 'db'
 
-    def check(this, mime: str, extension: str, rawdata: io.BytesIO, **kwargs):
-        return mime == this.MIME or extension == this.EXTENSION
+    def check(self, mime: str, extension: str, rawdata: io.BytesIO, **kwargs):
+        return mime == self.MIME or extension == self.EXTENSION
 
-    def read(this, mime: str, extension: str, rawdata: io.BytesIO, **kwargs):
+    def read(self, mime: str, extension: str, rawdata: io.BytesIO, **kwargs):
         tmp = tempfile.mkstemp(suffix = '.db')
         os.write(tmp[0], rawdata.getvalue())
         os.close(tmp[0])
@@ -77,7 +77,7 @@ class DatabaseFile(filesystem.Reader):
 
         return dest
 
-    def save(this, data: sqlite3.Connection) -> bytes:
+    def save(self, data: sqlite3.Connection) -> bytes:
         if isinstance(data, sqlite3.Connection):
             tmp = tempfile.mkstemp(suffix = '.db')
             os.close(tmp[0])

@@ -46,7 +46,7 @@ class Object(GameObject):
     """
 
     def __init__(
-        this,
+        self,
         file : str | bytes | File,
         filesystem : Filesystem | Folder = None,
         gamepath : str = None,
@@ -79,79 +79,79 @@ class Object(GameObject):
 
         super().__init__(filesystem, gamepath, assets, baseassets)
 
-        this.file = super().get_file(file)
+        self.file = super().get_file(file)
 
-        this._level_properties = deepcopy(properties)
+        self._level_properties = deepcopy(properties)
         if isinstance(pos, str):
-            this.pos = tuple([float(a) for a in pos.split()])
+            self.pos = tuple([float(a) for a in pos.split()])
         else:
-            this.pos = tuple(pos)
+            self.pos = tuple(pos)
 
-        this.HD = HD
-        this.TabHD = TabHD
+        self.HD = HD
+        self.TabHD = TabHD
         
-        this.xml : etree.ElementBase = etree.parse(this.file).getroot()
-        this.sprites : list[Sprite] = []
-        this.shapes : list[Shape] = []
-        this.UVs : list[tuple[int,int]] = []
-        this.VertIndices : list[int] = []
-        this.defaultProperties = {}
-        this.properties = {}
-        this.name = name
-        this.size = (0, 0)
-        this.id = 0
-        this.frame = 0
+        self.xml : etree.ElementBase = etree.parse(self.file).getroot()
+        self.sprites : list[Sprite] = []
+        self.shapes : list[Shape] = []
+        self.UVs : list[tuple[int,int]] = []
+        self.VertIndices : list[int] = []
+        self.defaultProperties = {}
+        self.properties = {}
+        self.name = name
+        self.size = (0, 0)
+        self.id = 0
+        self.frame = 0
 
-        this.object_pack = object_pack
+        self.object_pack = object_pack
         
-        this._background : list[Sprite] = []
-        this._foreground : list[Sprite] = []
-        this._PhotoImage : dict[str, 'ImageTk.PhotoImage'] = {}
+        self._background : list[Sprite] = []
+        self._foreground : list[Sprite] = []
+        self._PhotoImage : dict[str, 'ImageTk.PhotoImage'] = {}
         
-        this._offset = [0,0]
-        this.scale = scale
+        self._offset = [0,0]
+        self.scale = scale
 
-        this.readXML()
+        self.readXML()
 
-        this._properties = deepcopy(this.properties)
-        this.SAFE_MODE = False
+        self._properties = deepcopy(self.properties)
+        self.SAFE_MODE = False
 
         if isinstance(file, File):
-            this.filename = file.path
+            self.filename = file.path
 
     @property
-    def frame(this) -> int:
+    def frame(self) -> int:
         """The current animation frame.
 
         Returns:
             int: Current frame.
         """
-        return this._frame
+        return self._frame
 
     @frame.setter
-    def frame(this, value: int):
-        this._frame = value
-        for sprite in this.sprites:
+    def frame(self, value: int):
+        self._frame = value
+        for sprite in self.sprites:
             sprite.frame = value
     
-    def getOffset(this) -> tuple[float,float]:
+    def getOffset(self) -> tuple[float,float]:
         """Get the center offset for the Object image
 
         Returns:
             tuple[float,float]: (x,y)
         """
         rects = []
-        this._background : list[Sprite] = []
-        this._foreground : list[Sprite] = []
+        self._background : list[Sprite] = []
+        self._foreground : list[Sprite] = []
         
-        for sprite in this.sprites:
+        for sprite in self.sprites:
             if 'visible' in sprite.properties:
                 if not strbool(sprite.properties['visible']):
                     continue
             if ('isBackground' in sprite.properties) and strbool(sprite.properties['isBackground']):
-                this._background.append(sprite)
+                self._background.append(sprite)
             else:
-                this._foreground.append(sprite)
+                self._foreground.append(sprite)
                 
             pos = numpy.array(sprite.pos)
             size = (numpy.array(sprite.image.size) / sprite.scale) * [1,-1]
@@ -171,37 +171,37 @@ class Object(GameObject):
         min = numpy.array([math.floor(v.min()) for v in rects])
         max = numpy.array([math.ceil(v.max()) for v in rects])
 
-        this.size = numpy.maximum(max - min, [1, 1])
-        this._offset = [a.mean() for a in numpy.array([min, max]).swapaxes(0, 1)]
+        self.size = numpy.maximum(max - min, [1, 1])
+        self._offset = [a.mean() for a in numpy.array([min, max]).swapaxes(0, 1)]
 
-        return this._offset
+        return self._offset
 
     @property
-    def SAFE_MODE(this) -> bool:
+    def SAFE_MODE(self) -> bool:
         """Safe mode allows the properties to be modified without carrying onto the level xml.
 
         Returns:
             bool: The current state.
         """
-        if not hasattr(this, '_SAFE_MODE'):
-            this._SAFE_MODE = False
+        if not hasattr(self, '_SAFE_MODE'):
+            self._SAFE_MODE = False
 
-        this.SAFE_MODE = this._SAFE_MODE
-        return this._SAFE_MODE
+        self.SAFE_MODE = self._SAFE_MODE
+        return self._SAFE_MODE
 
     @SAFE_MODE.setter
-    def SAFE_MODE(this, mode: bool):
+    def SAFE_MODE(self, mode: bool):
         if not isinstance(mode, bool):
             raise TypeError('mode must be True or False')
 
         if mode:
-            if not hasattr(this, '_SAFE_MODE') or not this.SAFE_MODE:
-                this._properties = deepcopy(this.properties)
+            if not hasattr(self, '_SAFE_MODE') or not self.SAFE_MODE:
+                self._properties = deepcopy(self.properties)
         else:
-            if not hasattr(this, '_SAFE_MODE') or this.SAFE_MODE:
-                this.properties = deepcopy(this._properties)
+            if not hasattr(self, '_SAFE_MODE') or self.SAFE_MODE:
+                self.properties = deepcopy(self._properties)
 
-        for sprite in this.sprites:
+        for sprite in self.sprites:
             sprite.SAFE_MODE = mode
 
     @property
@@ -210,30 +210,30 @@ class Object(GameObject):
             return self.object_pack.get_type(self.type, self)
 
     @property
-    def background(this) -> Image.Image:
+    def background(self) -> Image.Image:
         """The background image of this Object
 
         Returns:
             PIL.Image.Image: PIL Image
         """
-        this.SAFE_MODE = True
+        self.SAFE_MODE = True
 
-        type = this.Type
+        type = self.Type
         if type != None:
             type.ready_sprites()
 
-        this.getOffset()
+        self.getOffset()
 
-        image = Image.new('RGBA', tuple(this.size * this.scale), (0, 0, 0, 0))
+        image = Image.new('RGBA', tuple(self.size * self.scale), (0, 0, 0, 0))
 
-        for sprite in this._background:
+        for sprite in self._background:
             size = (numpy.array(sprite.image.size) / sprite.scale) * [1,-1]
-            pos = this.truePos(
+            pos = self.truePos(
                 sprite.pos,
                 size,
-                this.size,
-                scale = this.scale,
-                offset = this._offset
+                self.size,
+                scale = self.scale,
+                offset = self._offset
             )
             
             # print(f'{pos = }')
@@ -242,49 +242,49 @@ class Object(GameObject):
                 sprite.image,
                 tuple([round(x) for x in pos]),
             )
-        image = this.rotateImage(image)
+        image = self.rotateImage(image)
 
-        this.SAFE_MODE = False
+        self.SAFE_MODE = False
         return image
 
     @property
-    def background_PhotoImage(this) -> 'ImageTk.PhotoImage':
+    def background_PhotoImage(self) -> 'ImageTk.PhotoImage':
         """Tkinter PhotoImage of this Object
 
         Returns:
             ImageTk.PhotoImage: Tkinter PhotoImage
         """
         if LOADED_ImageTk:
-            this._PhotoImage['background'] = ImageTk.PhotoImage(this.background)
+            self._PhotoImage['background'] = ImageTk.PhotoImage(self.background)
         else:
-            this._PhotoImage['background'] = this.background.copy()
+            self._PhotoImage['background'] = self.background.copy()
 
-        return this._PhotoImage['background']
+        return self._PhotoImage['background']
 
     @property
-    def foreground(this) -> Image.Image:
+    def foreground(self) -> Image.Image:
         """The foreground of the Object image
 
         Returns:
             PIL.Image.Image: PIL Image
         """
-        this.SAFE_MODE = True
+        self.SAFE_MODE = True
 
-        type = this.Type
+        type = self.Type
         if type != None:
             type.ready_sprites()
 
-        this.getOffset()
-        image = Image.new('RGBA', tuple(this.size * this.scale), (0, 0, 0, 0))
+        self.getOffset()
+        image = Image.new('RGBA', tuple(self.size * self.scale), (0, 0, 0, 0))
 
-        for sprite in this._foreground:
+        for sprite in self._foreground:
             size = (numpy.array(sprite.image.size) / sprite.scale) * [1,-1]
-            pos = this.truePos(
+            pos = self.truePos(
                 sprite.pos,
                 size,
-                this.size,
-                scale = this.scale,
-                offset = this._offset
+                self.size,
+                scale = self.scale,
+                offset = self._offset
             )
             
             # print(f'{pos = }')
@@ -293,61 +293,61 @@ class Object(GameObject):
                 sprite.image,
                 tuple([round(x) for x in pos]),
             )
-        image = this.rotateImage(image)
+        image = self.rotateImage(image)
 
-        this.SAFE_MODE = False
+        self.SAFE_MODE = False
 
         return image
 
     @property
-    def foreground_PhotoImage(this) -> 'ImageTk.PhotoImage':
+    def foreground_PhotoImage(self) -> 'ImageTk.PhotoImage':
         """Foreground Tkinter PhotoImage
 
         Returns:
             ImageTk.PhotoImage: Tkinter PhotoImage
         """
         if LOADED_ImageTk:
-            this._PhotoImage['foreground'] = ImageTk.PhotoImage(this.foreground)
+            self._PhotoImage['foreground'] = ImageTk.PhotoImage(self.foreground)
         else:
-            this._PhotoImage['foreground'] = this.foreground.copy()
+            self._PhotoImage['foreground'] = self.foreground.copy()
 
-        return this._PhotoImage['foreground']
+        return self._PhotoImage['foreground']
 
     @property
-    def image(this) -> Image.Image:
+    def image(self) -> Image.Image:
         """Full Object image, with both the background and foreground.
 
         Returns:
             PIL.Image.Image: PIL Image
         """
 
-        image = this.background
-        image.alpha_composite(this.foreground)
+        image = self.background
+        image.alpha_composite(self.foreground)
 
         if image.size[0] <= 0:
-            logging.warning(f'Object {this.name} image width is <= 0')
+            logging.warning(f'Object {self.name} image width is <= 0')
         if image.size[1] <= 0:
-            logging.warning(f'Object {this.name} image hight is <= 0')
+            logging.warning(f'Object {self.name} image hight is <= 0')
         return image
 
     @property
-    def offset(this) -> tuple[float, float]:
+    def offset(self) -> tuple[float, float]:
         """The center offset of the Object image
 
         Returns:
             tuple[float,float]: (x,y)
         """
-        logging.info(f'object: {this.name}')
+        logging.info(f'object: {self.name}')
 
-        this.getOffset()
-        offset = numpy.array(this._offset)
+        self.getOffset()
+        offset = numpy.array(self._offset)
 
-        offset = this.rotatePoint(offset * [1, -1])
+        offset = self.rotatePoint(offset * [1, -1])
         offset = numpy.array(offset) * [-1, 1]
 
         return offset
     
-    def rotatePoint(this, point : tuple = (0,0), angle : float = None) -> tuple[float,float]:
+    def rotatePoint(self, point : tuple = (0,0), angle : float = None) -> tuple[float,float]:
         """Rotate a point around (0,0)
 
         Args:
@@ -358,8 +358,8 @@ class Object(GameObject):
             tuple[float, float]: (x, y)
         """
         if angle == None:
-            if 'Angle' in this.properties:
-                angle = float(this.properties['Angle'])
+            if 'Angle' in self.properties:
+                angle = float(self.properties['Angle'])
             else:
                 angle = 0
 
@@ -368,7 +368,7 @@ class Object(GameObject):
 
         return rotate(point, degrees = -angle)
     
-    def rotateImage(this, image : Image.Image) -> Image.Image:
+    def rotateImage(self, image : Image.Image) -> Image.Image:
         """Rotate an image the amount of degrees as the Object `Angle` property
 
         Args:
@@ -377,60 +377,60 @@ class Object(GameObject):
         Returns:
             PIL.Image.Image: Rotated PIL Image
         """
-        if 'Angle' in this.properties:
-            angle = float(this.properties['Angle'])
+        if 'Angle' in self.properties:
+            angle = float(self.properties['Angle'])
             image = image.rotate(angle, expand = True, resample = Image.BILINEAR)
 
         return image
 
     @property
-    def PhotoImage(this) -> 'ImageTk.PhotoImage':
+    def PhotoImage(self) -> 'ImageTk.PhotoImage':
         """Tkinter PhotoImage of the Object image
 
         Returns:
             ImageTk.PhotoImage: Tkinter PhotoImage
         """
         if LOADED_ImageTk:
-            this._PhotoImage['image'] = ImageTk.PhotoImage(this.image)
+            self._PhotoImage['image'] = ImageTk.PhotoImage(self.image)
         else:
-            this._PhotoImage['image'] = this.image.copy()
+            self._PhotoImage['image'] = self.image.copy()
 
-        return this._PhotoImage['image']
+        return self._PhotoImage['image']
 
     @property
-    def scale(this) -> int:
+    def scale(self) -> int:
         """Object image scale
         """
-        return this._scale
+        return self._scale
 
     @scale.setter
-    def scale(this, value: int):
-        this._scale = value
-        for sprite in this.sprites:
-            sprite.scale = this._scale
+    def scale(self, value: int):
+        self._scale = value
+        for sprite in self.sprites:
+            sprite.scale = self._scale
 
-    def readXML(this):
+    def readXML(self):
         """Read object XML
         """
 
         # specifically specifying type so it's easier to use in vscode
         tags = {
-            'Shapes': this._getShapes,
-            'Sprites': this._getSprites,
-            'UVs': this._getUVs,
-            'VertIndices': this._getVertIndices,
-            'DefaultProperties': this._getDefaultProperties
+            'Shapes': self._getShapes,
+            'Sprites': self._getSprites,
+            'UVs': self._getUVs,
+            'VertIndices': self._getVertIndices,
+            'DefaultProperties': self._getDefaultProperties
         }
 
-        for element in this.xml:
+        for element in self.xml:
             if element is etree.Comment:
                 continue
             if element.tag in tags:
                 tags[element.tag](element)
 
-        this.getProperties()
+        self.getProperties()
     
-    def export(this, path : str = None) -> bytes:
+    def export(self, path : str = None) -> bytes:
         """Export object XML
 
         Args:
@@ -446,7 +446,7 @@ class Object(GameObject):
         
         shapes = etree.Element('Shapes')
 
-        for shape in this.shapes:
+        for shape in self.shapes:
             shape: Shape
             shapes.append(shape.getXML())
 
@@ -455,7 +455,7 @@ class Object(GameObject):
         
         sprites : etree.ElementBase = etree.Element('Sprites')
         
-        for sprite in this.sprites:
+        for sprite in self.sprites:
             sprite: Sprite
             sprite.export()
             etree.SubElement(sprites, 'Sprite', sprite.properties)
@@ -465,7 +465,7 @@ class Object(GameObject):
         
         UVs : etree.ElementBase = etree.Element('UVs')
         
-        for UV in this.UVs:
+        for UV in self.UVs:
             pos = ' '.join([str(_) for _ in UV])
             etree.SubElement(UVs, 'UV', {'pos': pos})
 
@@ -474,7 +474,7 @@ class Object(GameObject):
         
         VertIndices : etree.ElementBase = etree.Element('VertIndices')
         
-        for index in this.VertIndices:
+        for index in self.VertIndices:
             etree.SubElement(VertIndices, 'Vert', {'index': str(index)})
 
         if len(VertIndices) > 0:
@@ -482,52 +482,52 @@ class Object(GameObject):
         
         DefaultProperties : etree.ElementBase = etree.Element('DefaultProperties')
         
-        for name in this.defaultProperties:
+        for name in self.defaultProperties:
             etree.SubElement(DefaultProperties, 'Property', {
                 'name': name,
-                'value': this.defaultProperties[name]
+                'value': self.defaultProperties[name]
             })
         
         if len(DefaultProperties) > 0:
             xml.append(DefaultProperties)
 
-        this.xml = xml
+        self.xml = xml
         output = etree.tostring(xml, pretty_print=True, xml_declaration=True, encoding='utf-8')
         
         if path == None:
-            if this.filename:
-                path = this.filename
+            if self.filename:
+                path = self.filename
 
         if path != None:
-            if (file := this.filesystem.get(path)) != None:
+            if (file := self.filesystem.get(path)) != None:
                 if isinstance(file, File):
                     file.write(output)
                 else:
                     raise TypeError(f'Path {path} is not a file.')
 
             else:
-                this.filesystem.add(path, output)
+                self.filesystem.add(path, output)
 
         return output
 
-    def updateProperties(this):
+    def updateProperties(self):
         """Update properties.
         """
-        type = this.Type
+        type = self.Type
 
         if type != None:
             type.ready_properties()
         
         # for property in properties:
-        #     if property in this.defaultProperties:
-        #         if this.properties[property] == this.defaultProperties[property]:
-        #             del this.properties[property]
+        #     if property in self.defaultProperties:
+        #         if self.properties[property] == self.defaultProperties[property]:
+        #             del self.properties[property]
         
-        # if this.type != None:
-        #     this.properties['Type'] = this.type
+        # if self.type != None:
+        #     self.properties['Type'] = self.type
 
     def getLevelXML(
-        this,
+        self,
         filename : str = None,
     ) -> etree.ElementBase:
         """Gets XML to be used in levels.
@@ -539,58 +539,58 @@ class Object(GameObject):
             etree.Element: lxml Element
         """
         if filename == None:
-            if this.filename:
-                filename = this.filename
+            if self.filename:
+                filename = self.filename
         else:
-            this.filename = filename
+            self.filename = filename
 
-        xml = etree.Element('Object', name = this.name)
-        etree.SubElement(xml, 'AbsoluteLocation', value = ' '.join([str(_) for _ in this.pos]))
+        xml = etree.Element('Object', name = self.name)
+        etree.SubElement(xml, 'AbsoluteLocation', value = ' '.join([str(_) for _ in self.pos]))
         
         properties = etree.SubElement(xml, 'Properties')
 
-        this.updateProperties()
+        self.updateProperties()
 
-        for name in this.properties:
-            value = this.properties[name]
+        for name in self.properties:
+            value = self.properties[name]
 
             etree.SubElement(properties, 'Property', name = name, value = str(value))
         
-        this.getProperties()
+        self.getProperties()
         
         return xml
 
     @property
-    def filename(this) -> str | None:
+    def filename(self) -> str | None:
         """Object filename based on the `Filename` property
         """
-        return this.properties.get('Filename')
+        return self.properties.get('Filename')
 
     @filename.setter
-    def filename(this, value: str):
-        this.properties['Filename'] = value
+    def filename(self, value: str):
+        self.properties['Filename'] = value
 
     @property
-    def type(this) -> str | None:
+    def type(self) -> str | None:
         """The Object type, based off the `Type` property.
         """
-        return this.properties.get('Type', this.defaultProperties.get('Type', ''))
+        return self.properties.get('Type', self.defaultProperties.get('Type', ''))
 
     @type.setter
-    def type(this, value: str):
+    def type(self, value: str):
         if not isinstance(value, str):
             raise TypeError('type is not a string')
 
-        if not 'Type' in this.defaultProperties:
-            this.defaultProperties['Type'] = value
-        this.properties['Type'] = value
+        if not 'Type' in self.defaultProperties:
+            self.defaultProperties['Type'] = value
+        self.properties['Type'] = value
     
-    def _getShapes(this, xml : etree.ElementBase):
+    def _getShapes(self, xml : etree.ElementBase):
         for element in xml:
             shape = Shape(element)
-            this.shapes.append(shape)
+            self.shapes.append(shape)
         
-    def _getSprites(this, xml : etree.ElementBase):
+    def _getSprites(self, xml : etree.ElementBase):
         for element in xml:
             if element is etree.Comment:
                 continue
@@ -598,54 +598,54 @@ class Object(GameObject):
             if element.tag == 'Sprite':
                 attributes = element.attrib
 
-                file = this.filesystem.get(attributes['filename'])
+                file = self.filesystem.get(attributes['filename'])
 
                 if isinstance(file, File):
 
                     sprite = Sprite(
                         file = file,
-                        filesystem = this.filesystem,
+                        filesystem = self.filesystem,
                         properties = attributes,
-                        scale = this.scale,
-                        HD = this.HD,
-                        TabHD = this.TabHD
+                        scale = self.scale,
+                        HD = self.HD,
+                        TabHD = self.TabHD
                     )
-                    this.sprites.append(sprite)
+                    self.sprites.append(sprite)
     
-    def _getUVs(this, xml : etree.ElementBase):
+    def _getUVs(self, xml : etree.ElementBase):
         for element in xml:
             if element is etree.Comment:
                 continue
             if element.tag == 'UV':
                 pos = element.get('pos')
-                this.UVs.append(tuple([float(_) for _ in pos.split()]))
+                self.UVs.append(tuple([float(_) for _ in pos.split()]))
     
-    def _getVertIndices(this, xml : etree.ElementBase):
+    def _getVertIndices(self, xml : etree.ElementBase):
         for element in xml:
             if element is etree.Comment:
                 continue
             if element.tag == 'Vert':
                 index = element.get('index')
-                this.VertIndices.append(int(index))
+                self.VertIndices.append(int(index))
 
-    def getProperties(this):
+    def getProperties(self):
         """Get the object properties.
 
         Returns:
             dict[str,str]: The properties dictionary.
         """
 
-        # for prop in this.defaultProperties:
-        #     if prop not in this.properties:
-        #         this.properties[prop] = this.defaultProperties[prop]
-        this.properties = deepcopy(this._level_properties)
-        if this.properties == {}:
-            this.properties = deepcopy(this.defaultProperties)
-        if this.Type:
-            this.Type.ready_properties()
-        return this.properties
+        # for prop in self.defaultProperties:
+        #     if prop not in self.properties:
+        #         self.properties[prop] = self.defaultProperties[prop]
+        self.properties = deepcopy(self._level_properties)
+        if self.properties == {}:
+            self.properties = deepcopy(self.defaultProperties)
+        if self.Type:
+            self.Type.ready_properties()
+        return self.properties
     
-    def _getDefaultProperties(this, xml : etree.ElementBase):
+    def _getDefaultProperties(self, xml : etree.ElementBase):
         for element in xml:
             if element is etree.Comment:
                 continue
@@ -653,9 +653,9 @@ class Object(GameObject):
                 name = element.get('name')
                 value = element.get('value')
 
-                this.defaultProperties[name] = value
+                self.defaultProperties[name] = value
     
-    def setProperty(this, property : str | dict, value : str = ''):
+    def setProperty(self, property : str | dict, value : str = ''):
         """Set object property.
 
         Args:
@@ -664,12 +664,12 @@ class Object(GameObject):
         """
         if isinstance(property, dict):
             for name in property:
-                this.properties[name] = property[name]
+                self.properties[name] = property[name]
             return
-        this.properties[property] = value
+        self.properties[property] = value
     
     def getAnimation(
-        this,
+        self,
         duration : int = 0,
         fps : float = 0,
     ) -> dict[
@@ -698,15 +698,15 @@ class Object(GameObject):
             raise TypeError('duration must be an int or float')
 
         if (fps in [0, None]) or (fps <= 0):
-            fps = math.lcm(*[int(sprite.fps) for sprite in this.sprites])
+            fps = math.lcm(*[int(sprite.fps) for sprite in self.sprites])
         
         frames : list[Image.Image] = []
-        this.frame = 0
+        self.frame = 0
         frame = 0
         time = 0
 
         def check():
-            sprite_frame = sum([sprite.frame for sprite in this.sprites])
+            sprite_frame = sum([sprite.frame for sprite in self.sprites])
 
             if duration > 0:
                 return time <= duration
@@ -718,14 +718,14 @@ class Object(GameObject):
 
             return True
 
-            # print(f'test = {( not ((time > 0) and (duration <= 0) and ((sum([sprite.frame for sprite in this.sprites]) == 0))))}')
+            # print(f'test = {( not ((time > 0) and (duration <= 0) and ((sum([sprite.frame for sprite in self.sprites]) == 0))))}')
             # print(f'time check = {((time <= duration) and (duration > 0))}')
 
         while check():
-            for sprite in this.sprites:
+            for sprite in self.sprites:
                 sprite.frame += (frame) % ((fps / sprite.fps) + 1)
 
-            frames.append(this.image)
+            frames.append(self.image)
 
             frame += 1
             time += (1000 / fps) / 1000
@@ -739,7 +739,7 @@ class Object(GameObject):
          }
         
     def saveGIF(
-        this,
+        self,
         filename = None,
         duration : int = 0,
         fps : float = 0,
@@ -756,16 +756,16 @@ class Object(GameObject):
             PIL.Image.Image: The resulting PIL Image object.
         """
         if filename == None:
-            filename = this.name if this.name not in [
+            filename = self.name if self.name not in [
                 '', None
-            ] else this.type if this.type not in ['', None] else os.path.basename(
-                this.filename
+            ] else self.type if self.type not in ['', None] else os.path.basename(
+                self.filename
             )
             filename = os.path.splitext(filename)[0] + '.gif'
 
             # print(f'{filename = }')
         
-        animation = this.getAnimation(
+        animation = self.getAnimation(
             duration = duration,
             fps = fps,
         )
@@ -802,50 +802,50 @@ class Shape(GameObject):
         points (list[tuple[float,float]]): List of shape points.
     """
 
-    def __init__(this, xml: etree.ElementBase = None) -> None:
+    def __init__(self, xml: etree.ElementBase = None) -> None:
         """Shape for Object
 
         Args:
             xml (etree.Element, optional): lxml Element. Defaults to None.
         """
-        this.points: list[tuple[float, float]] = []
-        this.xml = xml
+        self.points: list[tuple[float, float]] = []
+        self.xml = xml
 
-        this.readXML()
+        self.readXML()
 
-    def readXML(this):
+    def readXML(self):
         """Read XML if any.
         """
-        if this.xml == None:
+        if self.xml == None:
             return
-        for element in this.xml:
+        for element in self.xml:
             if element is etree.Comment:
                 continue
             if element.tag == 'Point':
                 pos: str = element.get('pos')
                 point = tuple([float(_) for _ in pos.split()])
-                this.points.append(point)
+                self.points.append(point)
 
-    def getXML(this) -> etree.ElementBase:
+    def getXML(self) -> etree.ElementBase:
         """Gets Shape XML for Object.
 
         Returns:
             etree.Element: lxml Element.
         """
         xml: etree.ElementBase = etree.Element('Shape')
-        for point in this.points:
+        for point in self.points:
             etree.SubElement(xml, 'Point', {'pos': ' '.join([str(_) for _ in point])})
-        this.xml = xml
+        self.xml = xml
         return xml
 
     @property
-    def image(this) -> Image.Image:
+    def image(self) -> Image.Image:
         """Get the Shape image
 
         Returns:
             PIL.Image.Image: PIL Image
         """
-        points = numpy.array(this.points).swapaxes(0,1)
+        points = numpy.array(self.points).swapaxes(0,1)
         
         min = numpy.array([math.floor(v.min()) for v in points])
         max = numpy.array([math.ceil(v.max()) for v in points])
@@ -861,13 +861,13 @@ class Shape(GameObject):
         
         # size = size * [1,-1]
         # print(f'{size = }')
-        for n in range(len(this.points)):
-            point = this.points[n]
-            previous = (this.points[(n - 1) % len(this.points)])
+        for n in range(len(self.points)):
+            point = self.points[n]
+            previous = (self.points[(n - 1) % len(self.points)])
 
             line = numpy.array([point, previous])
             # line = line * [1,-1]
-            line = numpy.array(this.truePos(
+            line = numpy.array(self.truePos(
                 line,
                 (1,1),
                 size,

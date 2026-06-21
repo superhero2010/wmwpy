@@ -22,7 +22,7 @@ class Location(GameObject):
     """
 
     def __init__(
-        this,
+        self,
         file: File | str | bytes,
         filesystem: Filesystem | Folder = None,
         gamepath: str = None,
@@ -40,58 +40,58 @@ class Location(GameObject):
         """
         super().__init__(filesystem, gamepath, assets, baseassets)
 
-        this.file = super().get_file(file)
+        self.file = super().get_file(file)
 
-        this.xml: etree._Element = etree.parse(this.file).getroot()
+        self.xml: etree._Element = etree.parse(self.file).getroot()
 
-        this.backgrounds: list[dict[str, str]] = []
-        this.levels: list[dict[str, str]] = []
-        this.widgets: list[dict[str, str]] = []
-        this.sprites: list[dict[str, str]] = []
-        this.armatures: list[dict[str, str]] = []
-        this.waterPaths: list[dict[str, str]] = []
-        this.atlases: list[dict[str, str]] = []
-        this.expertAtlases: list[dict[str, str]] = []
-        this.transitionPiece: list[dict[str, str]] = []
-        this.expertModeAssets: list[dict[str, str]] = []
-        this.audios: list[dict[str, str]] = []
+        self.backgrounds: list[dict[str, str]] = []
+        self.levels: list[dict[str, str]] = []
+        self.widgets: list[dict[str, str]] = []
+        self.sprites: list[dict[str, str]] = []
+        self.armatures: list[dict[str, str]] = []
+        self.waterPaths: list[dict[str, str]] = []
+        self.atlases: list[dict[str, str]] = []
+        self.expertAtlases: list[dict[str, str]] = []
+        self.transitionPiece: list[dict[str, str]] = []
+        self.expertModeAssets: list[dict[str, str]] = []
+        self.audios: list[dict[str, str]] = []
 
-        this.read()
+        self.read()
 
-    def read(this):
+    def read(self):
         """Read the XML file.
         """
-        if this.xml == None:
+        if self.xml == None:
             return
 
-        this.backgrounds = []
-        this.levels = []
-        this.widgets = []
-        this.sprites = []
-        this.armatures = []
-        this.waterPaths = []
-        this.atlases = []
-        this.expertAtlases = []
-        this.transitionPiece = []
-        this.expertModeAssets = []
-        this.audios = []
+        self.backgrounds = []
+        self.levels = []
+        self.widgets = []
+        self.sprites = []
+        self.armatures = []
+        self.waterPaths = []
+        self.atlases = []
+        self.expertAtlases = []
+        self.transitionPiece = []
+        self.expertModeAssets = []
+        self.audios = []
 
         tags = {
-            'Backgrounds': this._getBackgrounds,
-            'Levels': this._getLevels,
-            'Widgets': this._getWidgets,
-            'Armatures': this._getArmatures,
-            'WaterPaths': this._getWaterPaths,
-            'Atlases': lambda xml, atlases = this.atlases: this.
+            'Backgrounds': self._getBackgrounds,
+            'Levels': self._getLevels,
+            'Widgets': self._getWidgets,
+            'Armatures': self._getArmatures,
+            'WaterPaths': self._getWaterPaths,
+            'Atlases': lambda xml, atlases = self.atlases: self.
             _getAtlasses(xml, atlases),
-            'ExpertAtlases': lambda xml, atlases = this.expertAtlases: this.
+            'ExpertAtlases': lambda xml, atlases = self.expertAtlases: self.
             _getAtlasses(xml, atlases),
-            'TransitionPiece': this._getTransitionPieces,
-            'ExpertModeAssets': this._getExpertModeAssets,
-            'Audios': this._getAudios,
+            'TransitionPiece': self._getTransitionPieces,
+            'ExpertModeAssets': self._getExpertModeAssets,
+            'Audios': self._getAudios,
         }
 
-        for element in this.xml:
+        for element in self.xml:
             element: etree._Element
             if element is etree.Comment:
                 continue
@@ -99,7 +99,7 @@ class Location(GameObject):
             if element.tag in tags:
                 tags[element.tag](element)
 
-    def _getBackgrounds(this, backgrounds: etree._Element):
+    def _getBackgrounds(self, backgrounds: etree._Element):
         for element in backgrounds:
             element: etree._Element
 
@@ -117,9 +117,9 @@ class Location(GameObject):
 
                     background[property.tag] = property.get('value')
 
-                this.backgrounds.append(background)
+                self.backgrounds.append(background)
 
-    def _getLevels(this, levels: etree._Element):
+    def _getLevels(self, levels: etree._Element):
         for element in levels:
             element: etree._Element
 
@@ -137,9 +137,9 @@ class Location(GameObject):
 
                     level[property.tag] = property.get('value')
 
-                this.levels.append(level)
+                self.levels.append(level)
 
-    def _getWidgets(this, widgets: etree._Element):
+    def _getWidgets(self, widgets: etree._Element):
         for element in widgets:
             element: etree._Element
 
@@ -157,9 +157,9 @@ class Location(GameObject):
 
                     widget[property.tag] = property.get('value')
 
-                this.widgets.append(widget)
+                self.widgets.append(widget)
 
-    def _getArmatures(this, armatures: etree._Element):
+    def _getArmatures(self, armatures: etree._Element):
         for element in armatures:
             element: etree._Element
 
@@ -177,9 +177,9 @@ class Location(GameObject):
 
                     armature[property.tag] = property.get('value')
 
-                this.armatures.append(armature)
+                self.armatures.append(armature)
 
-    def _getWaterPaths(this, waterPaths: etree._Element):
+    def _getWaterPaths(self, waterPaths: etree._Element):
         for element in waterPaths:
             element: etree._Element
 
@@ -211,11 +211,11 @@ class Location(GameObject):
 
                         waterPath['properties'] = properties
 
-                this.waterPaths.append(waterPath)
+                self.waterPaths.append(waterPath)
 
-    def _getAtlasses(this, xml: etree._Element, atlases: list = None):
+    def _getAtlasses(self, xml: etree._Element, atlases: list = None):
         if atlases == None:
-            atlases = this.atlases
+            atlases = self.atlases
 
         for element in xml:
             element: etree._Element
@@ -236,7 +236,7 @@ class Location(GameObject):
 
                 atlases.append(atlas)
 
-    def _getTransitionPieces(this, transitionPieces: etree._Element):
+    def _getTransitionPieces(self, transitionPieces: etree._Element):
         for element in transitionPieces:
             element: etree._Element
 
@@ -254,9 +254,9 @@ class Location(GameObject):
 
                     level[property.tag] = property.get('value')
 
-                this.levels.append(level)
+                self.levels.append(level)
 
-    def _getExpertModeAssets(this, expertModeAssets: etree._Element):
+    def _getExpertModeAssets(self, expertModeAssets: etree._Element):
         for element in expertModeAssets:
             element: etree._Element
 
@@ -264,9 +264,9 @@ class Location(GameObject):
                 continue
 
             if element.tag == 'Asset':
-                this.expertModeAssets.append(element.get('value'))
+                self.expertModeAssets.append(element.get('value'))
 
-    def _getAudios(this, audios: etree._Element):
+    def _getAudios(self, audios: etree._Element):
         for element in audios:
             element: etree._Element
 
@@ -284,4 +284,4 @@ class Location(GameObject):
 
                     level[property.tag] = property.get('value')
 
-                this.levels.append(level)
+                self.levels.append(level)

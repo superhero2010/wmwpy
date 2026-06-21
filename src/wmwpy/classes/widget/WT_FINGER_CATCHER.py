@@ -9,7 +9,7 @@ class WT_FINGER_CATCHER(Widget):
         "finger catcher" for digging events
     """
 
-    def __init__(this, *args, **kwargs) -> None:
+    def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
 
 

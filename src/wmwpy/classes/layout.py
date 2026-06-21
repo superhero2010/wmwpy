@@ -6,7 +6,7 @@ from .widget import get_widget
 class Layout(GameObject):
 
     def __init__(
-        this,
+        self,
         file: str | bytes | File = None,
         filesystem: Filesystem | Folder = None,
         gamepath: str = None,
@@ -15,6 +15,6 @@ class Layout(GameObject):
     ) -> None:
         super().__init__(filesystem, gamepath, assets, baseassets)
 
-        this.filename = ''
+        self.filename = ''
 
         get_widget('test').widget

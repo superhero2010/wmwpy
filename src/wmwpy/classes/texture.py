@@ -13,7 +13,7 @@ import os
 class Texture(GameObject):
 
     def __init__(
-        this,
+        self,
         image: Image.Image | Waltex | File,
         filesystem: Filesystem | Folder = None,
         gamepath: str = None,
@@ -36,68 +36,68 @@ class Texture(GameObject):
         """
         super().__init__(filesystem, gamepath, assets, baseassets)
 
-        this._file = image
-        this.HD = HD
-        this.TabHD = TabHD
+        self._file = image
+        self.HD = HD
+        self.TabHD = TabHD
 
-        if isinstance(this._file, (File, str)):
-            if isinstance(this._file, str):
-                this.filename = this._file
+        if isinstance(self._file, (File, str)):
+            if isinstance(self._file, str):
+                self.filename = self._file
             else:
-                this.filename = this._file.path
+                self.filename = self._file.path
 
-            this._file = getHDFile(
-                this._file,
-                HD = this.HD,
-                TabHD = this.TabHD,
-                filesystem = this.filesystem,
-                gamepath = this.gamepath,
-                assets = this.assets,
-                baseassets = this.baseassets,
+            self._file = getHDFile(
+                self._file,
+                HD = self.HD,
+                TabHD = self.TabHD,
+                filesystem = self.filesystem,
+                gamepath = self.gamepath,
+                assets = self.assets,
+                baseassets = self.baseassets,
             )
         else:
-            this.filename = ''
+            self.filename = ''
 
-        if isinstance(this._file, str):
-            this._file = this.filesystem.get(this._file)
+        if isinstance(self._file, str):
+            self._file = self.filesystem.get(self._file)
 
-        if isinstance(this._file, Waltex):
-            this.image = this._file.image
-        elif isinstance(this._file, Image.Image):
-            this.image = this._file
-        elif isinstance(this._file, File):
-            this.image = this._file.read()
-            if isinstance(this.image, Waltex):
-                this.image = this.image.image
-        elif isinstance(this._file, str):
-            this._file = this.filesystem.get(this._file)
-            this.image = this._file.read()
+        if isinstance(self._file, Waltex):
+            self.image = self._file.image
+        elif isinstance(self._file, Image.Image):
+            self.image = self._file
+        elif isinstance(self._file, File):
+            self.image = self._file.read()
+            if isinstance(self.image, Waltex):
+                self.image = self.image.image
+        elif isinstance(self._file, str):
+            self._file = self.filesystem.get(self._file)
+            self.image = self._file.read()
         else:
             raise TypeError(
                 'image must be PIL.Image.Image, Waltex, or filesystem.File.'
             )
 
-        # this._textureSettings = TextureSettings(
-        #     filesystem = this.filesystem,
-        #     gamepath = this.gamepath,
-        #     assets = this.assets,
-        #     baseassets = this.baseassets,
+        # self._textureSettings = TextureSettings(
+        #     filesystem = self.filesystem,
+        #     gamepath = self.gamepath,
+        #     assets = self.assets,
+        #     baseassets = self.baseassets,
         # )
 
-        # this.textureSettings = this._textureSettings.get(this.filename)
+        # self.textureSettings = self._textureSettings.get(self.filename)
 
-        # if not this.textureSettings.premultiplyAlpha:
-        #     this.image = this.image.convert('RGBa')
+        # if not self.textureSettings.premultiplyAlpha:
+        #     self.image = self.image.convert('RGBa')
 
     @property
-    def size(this) -> tuple[int, int]:
+    def size(self) -> tuple[int, int]:
         """The size of the image.
         Returns:
             tuple[int,int]: (width,height)
         """
-        return this.image.size
+        return self.image.size
 
-    def save(this, filename: str = None) -> File:
+    def save(self, filename: str = None) -> File:
         """Save the image to the filesystem.
         Args:
             filename (str, optional): Path to save the image to. Defaults to None.
@@ -105,15 +105,15 @@ class Texture(GameObject):
             File: wmwpy File object.
         """
         if filename == None:
-            filename = this.filename
+            filename = self.filename
         else:
-            this.filename = filename
+            self.filename = filename
 
         fileio = io.BytesIO()
 
-        this.image.save(fileio, format = os.path.splitext(filename)[1][1:].upper())
+        self.image.save(fileio, format = os.path.splitext(filename)[1][1:].upper())
 
-        file = this.filesystem.add(filename, fileio, replace = True)
+        file = self.filesystem.add(filename, fileio, replace = True)
 
         return file
 

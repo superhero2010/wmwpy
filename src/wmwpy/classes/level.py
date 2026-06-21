@@ -42,7 +42,7 @@ class Level(GameObject):
     IMAGE_FORMAT = 'PNG'
 
     def __init__(
-        this,
+        self,
         xml: str | bytes | File = None,
         image: str | bytes | File = None,
         filesystem: Filesystem | Folder = None,
@@ -70,11 +70,11 @@ class Level(GameObject):
             TabHD (bool, optional): Use TabHD images. Defaults to False.
         """
 
-        this.gamepath = gamepath
-        this.assets = assets
-        this.filename = ''
-        if this.assets == None:
-            this.assets = '/assets'
+        self.gamepath = gamepath
+        self.assets = assets
+        self.filename = ''
+        if self.assets == None:
+            self.assets = '/assets'
 
         super().__init__(filesystem, gamepath, assets, baseassets)
 
@@ -83,104 +83,104 @@ class Level(GameObject):
         if isinstance(xml, File):
             logging.debug(f'Level: xml path: {xml.path}')
 
-        this.xml_file = super().get_file(xml, template = this.XML_TEMPLATE)
+        self.xml_file = super().get_file(xml, template = self.XML_TEMPLATE)
 
-        logging.debug(f'Level: xml after: {this.xml_file}')
+        logging.debug(f'Level: xml after: {self.xml_file}')
         # try:
-        #     logging.debug(f'Level: raw xml:\n{this.xml_file.getvalue().decode()}')
+        #     logging.debug(f'Level: raw xml:\n{self.xml_file.getvalue().decode()}')
         # except:
         #     logging.debug('Level: file not io.BytesIO')
 
-        if isinstance(this.xml_file, io.BytesIO):
-            this.xml_file.seek(0)
+        if isinstance(self.xml_file, io.BytesIO):
+            self.xml_file.seek(0)
 
-        this.xml = etree.parse(this.xml_file).getroot()
+        self.xml = etree.parse(self.xml_file).getroot()
 
-        this.image_file = super().get_file(image)
-        if this.image_file == None:
-            this.image = this.IMAGE_TEMPLATE.copy()
+        self.image_file = super().get_file(image)
+        if self.image_file == None:
+            self.image = self.IMAGE_TEMPLATE.copy()
         else:
-            this.image = Image.open(this.image_file)
+            self.image = Image.open(self.image_file)
 
-        this.HD = HD
-        this.TabHD = TabHD
+        self.HD = HD
+        self.TabHD = TabHD
 
-        this.object_pack = object_pack
+        self.object_pack = object_pack
 
-        this.objects: list[Object] = []
-        this.properties: dict[str, str] = {}
-        this.challenges: list[Level.Challenge] = []
-        this.room = (0, 0)
+        self.objects: list[Object] = []
+        self.properties: dict[str, str] = {}
+        self.challenges: list[Level.Challenge] = []
+        self.room = (0, 0)
 
-        this.read(load_callback = load_callback, ignore_errors = ignore_errors)
+        self.read(load_callback = load_callback, ignore_errors = ignore_errors)
 
-        this.scale = 5
+        self.scale = 5
 
     @property
-    def size(this) -> tuple[int, int]:
+    def size(self) -> tuple[int, int]:
         """Level image size
 
         Returns:
             tuple[int,int]: (width,height)
         """
-        return this._image.size
+        return self._image.size
 
     @property
-    def image(this) -> Image.Image:
+    def image(self) -> Image.Image:
         """Scaled up Level image
 
         Returns:
             PIL.Image.Image: PIL Image
         """
-        image = this._image.copy()
+        image = self._image.copy()
 
         size = numpy.array(image.size)
-        size = size * this.scale
+        size = size * self.scale
 
         image = image.resize(tuple(size), resample = Image.NEAREST)
 
         return image
 
     @image.setter
-    def image(this, value: Image.Image):
-        this._image = value
+    def image(self, value: Image.Image):
+        self._image = value
 
     @property
-    def PhotoImage(this) -> 'ImageTk.PhotoImage':
+    def PhotoImage(self) -> 'ImageTk.PhotoImage':
         """Tkinter PhotoImage of the Level image
 
         Returns:
             ImageTk.PhotoImage: Tkinter PhotoImage
         """
         if LOADED_ImageTk:
-            this._PhotoImage = ImageTk.PhotoImage(this.image)
+            self._PhotoImage = ImageTk.PhotoImage(self.image)
         else:
-            this._PhotoImage = this.image.copy()
+            self._PhotoImage = self.image.copy()
 
-        return this._PhotoImage
+        return self._PhotoImage
 
     @property
-    def scale(this) -> int:
+    def scale(self) -> int:
         """Level size scale
         """
-        return this._scale
+        return self._scale
 
     @scale.setter
-    def scale(this, value: int):
-        this._scale = value
+    def scale(self, value: int):
+        self._scale = value
 
-        for obj in this.objects:
-            obj.scale = this._scale
+        for obj in self.objects:
+            obj.scale = self._scale
 
     def read(
-        this,
+        self,
         load_callback: typing.Callable[[int, str, int], typing.Any] = None,
         ignore_errors: bool = False,
     ):
         """Read level XML
         """
-        this.objects: list[Object] = []
-        this.properties = {}
+        self.objects: list[Object] = []
+        self.properties = {}
 
         def run_callback(index, name, max):
             try:
@@ -191,11 +191,11 @@ class Level(GameObject):
 
         id = 0
 
-        max = len(this.xml)
+        max = len(self.xml)
 
         index = 0
 
-        for element in this.xml:
+        for element in self.xml:
             element: etree.ElementBase
 
             try:
@@ -225,21 +225,21 @@ class Level(GameObject):
 
                     if 'Filename' in properties:
                         obj = Object(
-                            this.filesystem.get(
+                            self.filesystem.get(
                                 properties['Filename']
                             ),  # get file because `Object` does not take filepath
-                            filesystem = this.filesystem,
+                            filesystem = self.filesystem,
                             properties = properties,
                             pos = pos,
                             name = name,
-                            HD = this.HD,
-                            TabHD = this.TabHD,
-                            object_pack = this.object_pack,
+                            HD = self.HD,
+                            TabHD = self.TabHD,
+                            object_pack = self.object_pack,
                         )
 
                         obj.id = id
 
-                        this.objects.append(obj)
+                        self.objects.append(obj)
 
                         id += 1
 
@@ -251,7 +251,7 @@ class Level(GameObject):
                             continue
 
                         if el.tag == 'Property':
-                            this.properties[el.get('name')] = el.get('value')
+                            self.properties[el.get('name')] = el.get('value')
 
                 elif element.tag == 'Room':
                     run_callback(index, 'Room', max)
@@ -261,7 +261,7 @@ class Level(GameObject):
                             continue
 
                         if el.tag == 'AbsoluteLocation':
-                            this.room = tuple([
+                            self.room = tuple([
                                 float(_) for _ in el.get('value').split()
                             ])
                 elif element.tag == 'Challenges':
@@ -271,7 +271,7 @@ class Level(GameObject):
                             continue
 
                         if challenge.tag == 'Challenge':
-                            this.challenges.append(this.Challenge(challenge))
+                            self.challenges.append(self.Challenge(challenge))
 
                 elif callable(load_callback):
                     run_callback(index, element.tag, max)
@@ -286,7 +286,7 @@ class Level(GameObject):
                     raise
 
     def export(
-        this,
+        self,
         filename: str = None,
         exportObjects: bool = False,
         saveImage: bool = True,
@@ -304,13 +304,13 @@ class Level(GameObject):
             bytes: XML file.
         """
         if filename == None:
-            if this.filename:
-                filename = this.filename
+            if self.filename:
+                filename = self.filename
         else:
-            this.filename = filename
+            self.filename = filename
 
         xml: etree.ElementBase = etree.Element('Objects')
-        for object in this.objects:
+        for object in self.objects:
             if exportObjects:
                 object.export()
 
@@ -318,12 +318,12 @@ class Level(GameObject):
 
         room = etree.Element('Room')
         etree.SubElement(
-            room, 'AbsoluteLocation', value = ' '.join([str(_) for _ in this.room])
+            room, 'AbsoluteLocation', value = ' '.join([str(_) for _ in self.room])
         )
 
         properties = etree.Element('Properties')
-        for name in this.properties:
-            value = this.properties[name]
+        for name in self.properties:
+            value = self.properties[name]
             etree.SubElement(properties, 'Property', name = name, value = value)
 
         if len(properties):
@@ -331,49 +331,49 @@ class Level(GameObject):
 
         challenges: etree._Element = etree.Element('Challenges')
 
-        for challenge in this.challenges:
+        for challenge in self.challenges:
             challenges.append(challenge.getXML())
 
         if len(challenges):
             xml.append(challenges)
 
-        this.xml = xml
+        self.xml = xml
 
         output = etree.tostring(
             xml, pretty_print = True, xml_declaration = True, encoding = 'utf-8'
         )
 
-        if (file := this.filesystem.get(filename)) != None:
+        if (file := self.filesystem.get(filename)) != None:
             if isinstance(file, File):
                 file.write(output)
             else:
                 raise TypeError(f'Path {filename} is not a file.')
 
         else:
-            this.filesystem.add(filename, output)
+            self.filesystem.add(filename, output)
 
         if saveImage:
             imgFile = io.BytesIO()
-            this._image.save(
+            self._image.save(
                 imgFile,
-                format = this.IMAGE_FORMAT,
+                format = self.IMAGE_FORMAT,
             )
 
-            filename = os.path.splitext(filename)[0] + f'.{this.IMAGE_FORMAT.lower()}'
+            filename = os.path.splitext(filename)[0] + f'.{self.IMAGE_FORMAT.lower()}'
 
-            if (file := this.filesystem.get(filename)) != None:
+            if (file := self.filesystem.get(filename)) != None:
                 if isinstance(file, File):
                     file.write(imgFile.getvalue())
                 else:
                     raise TypeError(f'Path {filename} is not a file.')
 
             else:
-                this.filesystem.add(filename, imgFile.getvalue())
+                self.filesystem.add(filename, imgFile.getvalue())
 
         return output
 
     def addObject(
-        this,
+        self,
         filename: str | Object,
         properties: dict = {},
         pos: tuple[float, float] = (0, 0),
@@ -393,11 +393,11 @@ class Level(GameObject):
         if not isinstance(filename, Object):
             filename = Object(
                 filename,
-                filesystem = this.filesystem,
+                filesystem = self.filesystem,
                 properties = properties,
                 pos = pos,
                 name = name,
-                object_pack = this.object_pack,
+                object_pack = self.object_pack,
             )
         else:
             filename.name = name
@@ -407,24 +407,24 @@ class Level(GameObject):
         obj = filename
 
         id = 0
-        while this.getObjectById(id) != None:
+        while self.getObjectById(id) != None:
             id += 1
 
-        if this.getObject(obj.name) != None:
+        if self.getObject(obj.name) != None:
             objnum = 0
             name = obj.name
 
-            while this.getObject(obj.name) != None:
+            while self.getObject(obj.name) != None:
                 objnum += 1
                 obj.name = f'{name}{str(objnum)}'
 
         obj.id = id
-        this.objects.append(obj)
-        obj.scale = this.scale
+        self.objects.append(obj)
+        obj.scale = self.scale
 
         return obj
 
-    def getObjectById(this, id: int) -> Object:
+    def getObjectById(self, id: int) -> Object:
         """Get an Object by it's id
 
         Args:
@@ -438,12 +438,12 @@ class Level(GameObject):
         except:
             return
 
-        for obj in this.objects:
+        for obj in self.objects:
             if obj.id == id:
                 return obj
         return None
 
-    def getObject(this, name: str):
+    def getObject(self, name: str):
         """
         Get object by name
 
@@ -451,14 +451,14 @@ class Level(GameObject):
             name (str): Object name.
         """
 
-        for obj in this.objects:
+        for obj in self.objects:
             if obj.name == name:
                 return obj
 
     class Challenge():
 
         def __init__(
-            this,
+            self,
             xml: etree.ElementBase = None,
             id: str = '',
             requirements: dict[str, dict[str, str]] = {},
@@ -486,22 +486,22 @@ class Level(GameObject):
                 }
                 ```
             """
-            this.xml = xml
-            this.id = id
-            this.requirements: dict[str, dict[str, str]] = copy.deepcopy(requirements)
+            self.xml = xml
+            self.id = id
+            self.requirements: dict[str, dict[str, str]] = copy.deepcopy(requirements)
 
-            if isinstance(this.xml, etree._Element):
-                this.readXML()
+            if isinstance(self.xml, etree._Element):
+                self.readXML()
 
-        def readXML(this):
+        def readXML(self):
             """Read the XML of the challenge. If the XML wasn't set, it'll just return `None`
             """
-            if not isinstance(this.xml, etree._Element):
+            if not isinstance(self.xml, etree._Element):
                 return
 
-            this.id = this.xml.get('id', '')
+            self.id = self.xml.get('id', '')
 
-            for element in this.xml:
+            for element in self.xml:
                 # so I can access the attributes in vscode
                 element: etree.ElementBase
 
@@ -510,21 +510,21 @@ class Level(GameObject):
 
                 requirement = copy.deepcopy(element.attrib)
 
-                this.requirements[element.tag] = requirement
+                self.requirements[element.tag] = requirement
 
-        def getXML(this):
+        def getXML(self):
             """Get the XML for the challenge.
 
             Returns:
                 lxml.etree.Element: lxml etree Element.
             """
-            root: etree._Element = etree.Element('Challenge', id = this.id)
+            root: etree._Element = etree.Element('Challenge', id = self.id)
 
-            for name in this.requirements:
-                requirement = this.requirements[name]
+            for name in self.requirements:
+                requirement = self.requirements[name]
 
                 etree.SubElement(root, name, **requirement)
 
-            this.xml = root
+            self.xml = root
 
             return root

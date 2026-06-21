@@ -11,7 +11,7 @@ WIDGETS: dict[str, 'Widget'] = {}
 class Widget(GameObject):
 
     def __init__(
-        this,
+        self,
         xml: etree.ElementBase = None,
         filesystem: Filesystem | Folder = None,
         gamepath: str = None,
@@ -27,42 +27,42 @@ class Widget(GameObject):
 
         super().__init__(filesystem, gamepath, assets, baseassets)
 
-        this.xml = xml
-        this.properties = this.xml.attrib
-        this.type = this.properties['type']
+        self.xml = xml
+        self.properties = self.xml.attrib
+        self.type = self.properties['type']
 
-        this.pos = (0, 0)
-        this.size = (0, 0)
-        this.id = 0
-        this.layer = 0
+        self.pos = (0, 0)
+        self.size = (0, 0)
+        self.id = 0
+        self.layer = 0
 
-        this.forceAspect = False
-        this.visible = True
+        self.forceAspect = False
+        self.visible = True
 
-        this.getValues()
+        self.getValues()
 
-        this.image = Image.new('RGBA', (100, 100))
+        self.image = Image.new('RGBA', (100, 100))
 
-    def getValues(this):
-        if 'pos' in this.properties:
-            this.pos = [float(v) for v in tuple(this.properties['pos'].split(' '))]
+    def getValues(self):
+        if 'pos' in self.properties:
+            self.pos = [float(v) for v in tuple(self.properties['pos'].split(' '))]
 
-        if 'id' in this.properties:
-            this.id = float(this.properties['id'])
+        if 'id' in self.properties:
+            self.id = float(self.properties['id'])
 
-        if 'layer' in this.properties:
-            this.layer = float(this.properties['layer'])
+        if 'layer' in self.properties:
+            self.layer = float(self.properties['layer'])
 
-        if 'size' in this.properties:
-            this.size = [float(v) for v in tuple(this.properties['size'].split(' '))]
+        if 'size' in self.properties:
+            self.size = [float(v) for v in tuple(self.properties['size'].split(' '))]
 
-        if 'forceAspect' in this.properties:
-            this.setForceAspect(this.properties['forceAspect'])
+        if 'forceAspect' in self.properties:
+            self.setForceAspect(self.properties['forceAspect'])
 
-        if 'visible' in this.properties:
-            this.visible = bool(this.properties['visible'])
+        if 'visible' in self.properties:
+            self.visible = bool(self.properties['visible'])
 
-    def setForceAspect(this, aspect = (1, 1)):
+    def setForceAspect(self, aspect = (1, 1)):
         if isinstance(aspect, str):
             forceAspect = tuple([float(v) for v in aspect.split(':')])
         elif not aspect:
@@ -70,20 +70,20 @@ class Widget(GameObject):
         else:
             forceAspect = tuple(aspect)
 
-        this.forceAspect = forceAspect
+        self.forceAspect = forceAspect
 
     @property
-    def type(this):
-        return this.properties['type']
+    def type(self):
+        return self.properties['type']
 
     @type.setter
-    def type(this, value):
-        this.properties['type'] = value
+    def type(self, value):
+        self.properties['type'] = value
 
-        if this.properties['type'] in WIDGETS:
-            this.__class__ = WIDGETS[this.properties['type']]
+        if self.properties['type'] in WIDGETS:
+            self.__class__ = WIDGETS[self.properties['type']]
         else:
-            this.__class__ = Widget
+            self.__class__ = Widget
 
 
 def register_widget(name: str, class_: Widget):

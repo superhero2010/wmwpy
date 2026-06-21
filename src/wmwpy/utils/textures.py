@@ -16,7 +16,7 @@ _cachedWaltextImages = {}
 class HDFile(GameObject):
 
     def __init__(
-        this,
+        self,
         file: str | File,
         HD: bool = True,
         TabHD: bool = False,
@@ -28,40 +28,40 @@ class HDFile(GameObject):
         super().__init__(filesystem, gamepath, assets, baseassets)
 
         if isinstance(file, File):
-            this.file = file.path
+            self.file = file.path
         elif isinstance(file, str):
-            this.file = file
+            self.file = file
         else:
             raise TypeError('file must be a File or str')
 
-        this.HD = HD
-        this.TabHD = TabHD
+        self.HD = HD
+        self.TabHD = TabHD
 
     @property
-    def filename(this) -> str:
-        name, extension = os.path.splitext(this.file)
+    def filename(self) -> str:
+        name, extension = os.path.splitext(self.file)
 
-        if this.TabHD:
+        if self.TabHD:
             filename = f'{name}-TabHD{extension}'
-            if this.filesystem == None:
+            if self.filesystem == None:
                 return filename
 
-            if this.filesystem.exists(filename):
+            if self.filesystem.exists(filename):
                 return filename
 
-        this.TabHD = False
+        self.TabHD = False
 
-        if this.HD:
+        if self.HD:
             filename = f'{name}-HD{extension}'
-            if this.filesystem == None:
+            if self.filesystem == None:
                 return filename
 
-            if this.filesystem.exists(filename):
+            if self.filesystem.exists(filename):
                 return filename
 
-        this.HD = False
+        self.HD = False
 
-        return this.file
+        return self.file
 
 
 def getHDFile(

@@ -12,7 +12,7 @@ class Database(GameObject):
         filesystem: Filesystem | Folder = None,
         gamepath: str = None,
         assets: str = '/assets',
-        baseassets: str = '/'
+        baseassets: str = '/',
     ) -> None:
         """Game database object, which contains an sqlite3 database.
 
@@ -62,8 +62,8 @@ class Database(GameObject):
 
         this._connection = connection
         this.cursor = this._connection.cursor()
-        
-    def export(this, filename : str = None) -> bytes:
+
+    def export(this, filename: str = None) -> bytes:
         """Export the database into the filesystem.
 
         Args:

@@ -26,14 +26,23 @@ def rgb_to_hls(rgb_array: numpy.ndarray) -> numpy.ndarray:
         rgb_c = (maxc - rgb_array) / rangec
     rc, gc, bc = rgb_c.T.reshape((3, -1, 1))
 
-    h = (numpy.where(minc == maxc, 0, numpy.where(r == maxc, bc - gc, numpy.where(g == maxc, 2.0+rc-bc, 4.0+gc-rc)))
-         / 6) % 1
-    l = sumc/2.0
-    with numpy.errstate(divide='ignore', invalid='ignore'):
-        s = numpy.where(minc == maxc, 0,
-                     numpy.where(l < 0.5, rangec / sumc, rangec / (2.0-sumc)))
+    h = (
+        numpy.where(
+            minc == maxc, 0,
+            numpy.where(
+                r == maxc, bc - gc,
+                numpy.where(g == maxc, 2.0 + rc - bc, 4.0 + gc - rc)
+            )
+        ) / 6
+    ) % 1
+    l = sumc / 2.0
+    with numpy.errstate(divide = 'ignore', invalid = 'ignore'):
+        s = numpy.where(
+            minc == maxc, 0, numpy.where(l < 0.5, rangec / sumc, rangec / (2.0 - sumc))
+        )
 
     return numpy.concatenate((h, l, s), axis = 1)
+
 
 def hls_to_rgb(hls_array: numpy.ndarray) -> numpy.ndarray:
     """
@@ -48,11 +57,13 @@ def hls_to_rgb(hls_array: numpy.ndarray) -> numpy.ndarray:
 
     def _v(m1, m2, h):
         h = h % 1.0
-        return numpy.where(h < ONE_SIXTH, m1 + (m2 - m1) * h * 6,
-                        numpy.where(h < .5, m2,
-                                 numpy.where(h < TWO_THIRD, m1 + (m2 - m1) * (TWO_THIRD - h) * 6,
-                                          m1)))
-
+        return numpy.where(
+            h < ONE_SIXTH, m1 + (m2 - m1) * h * 6,
+            numpy.where(
+                h < .5, m2,
+                numpy.where(h < TWO_THIRD, m1 + (m2 - m1) * (TWO_THIRD - h) * 6, m1)
+            )
+        )
 
     assert hls_array.ndim == 2
     assert hls_array.shape[1] == 3
@@ -68,6 +79,7 @@ def hls_to_rgb(hls_array: numpy.ndarray) -> numpy.ndarray:
     b = numpy.where(s == 0, l, _v(m1, m2, h - ONE_THIRD))
 
     return numpy.concatenate((r, g, b), axis = 1)
+
 
 def hsv_to_rgb(hsv_array: numpy.ndarray) -> numpy.ndarray:
     """
@@ -90,7 +102,7 @@ def hsv_to_rgb(hsv_array: numpy.ndarray) -> numpy.ndarray:
     p = v * (1.0 - s)
     q = v * (1.0 - s * f)
     t = v * (1.0 - s * (1.0 - f))
-    # i = i % 6
+    # i = i%6
     wh = numpy.where
 
     return wh(
@@ -112,6 +124,7 @@ def hsv_to_rgb(hsv_array: numpy.ndarray) -> numpy.ndarray:
             )
         )
     )
+
 
 def rgb_to_hsv(rgb_array: numpy.ndarray) -> numpy.ndarray:
     """
@@ -136,12 +149,16 @@ def rgb_to_hsv(rgb_array: numpy.ndarray) -> numpy.ndarray:
         rgb_c = (maxc - rgb_array) / rangec
     rc, gc, bc = rgb_c.T.reshape((3, -1, 1))
 
-    h = (numpy.where(minc == maxc, 0,
-                  numpy.where(r == maxc, bc - gc,
-                           numpy.where(g == maxc, 2.0+rc-bc,
-                                    4.0+gc-rc)))
-         / 6) % 1
-    with numpy.errstate(divide='ignore', invalid='ignore'):
+    h = (
+        numpy.where(
+            minc == maxc, 0,
+            numpy.where(
+                r == maxc, bc - gc,
+                numpy.where(g == maxc, 2.0 + rc - bc, 4.0 + gc - rc)
+            )
+        ) / 6
+    ) % 1
+    with numpy.errstate(divide = 'ignore', invalid = 'ignore'):
         s = numpy.where(minc == maxc, 0, rangec / maxc)
 
     return numpy.concatenate((h, s, v), axis = 1)

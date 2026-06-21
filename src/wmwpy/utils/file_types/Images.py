@@ -17,15 +17,16 @@ class WaltexFile(filesystem.Reader):
         byte_order = 'little'
         if 'byte_order' in kwargs:
             byte_order = kwargs['byte_order']
-        return Waltex(rawdata.getvalue(), byte_order=byte_order)
-    
+        return Waltex(rawdata.getvalue(), byte_order = byte_order)
+
+
 class ImageFile(filesystem.Reader):
     MIME = 'image/'
     EXTENSION = ''
 
     def check(this, mime: str, extension: str, rawdata: io.BytesIO, **kwargs):
-        newMime : str = filetype.guess_mime(rawdata.getvalue())
-        
+        newMime: str = filetype.guess_mime(rawdata.getvalue())
+
         return newMime != None and newMime.startswith(this.MIME)
 
     def read(this, mime: str, extension: str, rawdata: io.BytesIO, **kwargs):

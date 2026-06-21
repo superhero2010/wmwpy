@@ -17,7 +17,7 @@ class Widget(GameObject):
         gamepath: str = None,
         assets: str = '/assets',
         baseassets: str = '/',
-        screenSize : tuple = (900,720),
+        screenSize: tuple = (900, 720),
     ) -> None:
         """
             Main widget
@@ -86,7 +86,7 @@ class Widget(GameObject):
             this.__class__ = Widget
 
 
-def register_widget(name : str, class_ : Widget):
+def register_widget(name: str, class_: Widget):
 
     if not isinstance(class_, type):
         class_ = class_.__class__

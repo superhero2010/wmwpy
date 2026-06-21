@@ -17,7 +17,8 @@ class ImagelistFile(filesystem.Reader):
 
     def read(this, mime: str, extension: str, rawdata: io.BytesIO, **kwargs):
         return Imagelist(rawdata.getvalue(), **kwargs)
-    
+
+
 class SpriteFile(filesystem.Reader):
     MIME = 'text/sprite'
     EXTENSION = 'sprite'
@@ -27,7 +28,8 @@ class SpriteFile(filesystem.Reader):
 
     def read(this, mime: str, extension: str, rawdata: io.BytesIO, **kwargs):
         return Sprite()
-    
+
+
 class ObjectFile(filesystem.Reader):
     MIME = 'text/hs'
     EXTENSION = 'hs'
@@ -37,15 +39,18 @@ class ObjectFile(filesystem.Reader):
 
     def read(this, mime: str, extension: str, rawdata: io.BytesIO, **kwargs):
         return Object()
-    
+
+
 class XMLFile(filesystem.Reader):
     MIME = 'text/xml'
     EXTENSION = 'xml'
 
     def check(this, mime: str, extension: str, rawdata: io.BytesIO, **kwargs):
         return extension == this.EXTENSION or mime == this.MIME
-    
-    def read(this, mime: str, extension: str, rawdata: io.BytesIO, **kwargs) -> etree.ElementBase:
+
+    def read(
+        this, mime: str, extension: str, rawdata: io.BytesIO, **kwargs
+    ) -> etree.ElementBase:
         return etree.parse(rawdata).getroot()
 
 
@@ -91,5 +96,6 @@ class DatabaseFile(filesystem.Reader):
             return rawdata
 
         return super().save(data)
-    
+
+
 TYPES = [ImagelistFile(), XMLFile(), ObjectFile(), SpriteFile(), DatabaseFile()]

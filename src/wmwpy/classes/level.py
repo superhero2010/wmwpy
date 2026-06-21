@@ -31,7 +31,7 @@ class Level(GameObject):
         objects (list[Object]): List of Objects currently in this level.
         properties (dict[str,str]:) All the Level properties.
         challenges (list[Level.Challenge]): List of WMW2 challenges in this level.
-        room (tuple[float, float]): The room element in WMW levels. I have no idea what this does, but it still should be kept, even though it doesn't actually do anything.
+        room (tuple[float,float]): The room element in WMW levels. I have no idea what this does, but it still should be kept, even though it doesn't actually do anything.
     """
     XML_TEMPLATE = b"""<?xml version="1.0"?>
     <Objects>
@@ -107,10 +107,10 @@ class Level(GameObject):
 
         this.object_pack = object_pack
 
-        this.objects : list[Object] = []
-        this.properties : dict[str,str] = {}
-        this.challenges : list[Level.Challenge] = []
-        this.room = (0,0)
+        this.objects: list[Object] = []
+        this.properties: dict[str, str] = {}
+        this.challenges: list[Level.Challenge] = []
+        this.room = (0, 0)
 
         this.read(load_callback = load_callback, ignore_errors = ignore_errors)
 
@@ -121,7 +121,7 @@ class Level(GameObject):
         """Level image size
 
         Returns:
-            tuple[int, int]: (width,height)
+            tuple[int,int]: (width,height)
         """
         return this._image.size
 
@@ -174,8 +174,8 @@ class Level(GameObject):
 
     def read(
         this,
-        load_callback : typing.Callable[[int, str, int], typing.Any] = None,
-        ignore_errors : bool = False,
+        load_callback: typing.Callable[[int, str, int], typing.Any] = None,
+        ignore_errors: bool = False,
     ):
         """Read level XML
         """
@@ -234,7 +234,7 @@ class Level(GameObject):
                             name = name,
                             HD = this.HD,
                             TabHD = this.TabHD,
-                            object_pack = this.object_pack
+                            object_pack = this.object_pack,
                         )
 
                         obj.id = id
@@ -287,9 +287,9 @@ class Level(GameObject):
 
     def export(
         this,
-        filename : str = None,
-        exportObjects : bool = False,
-        saveImage : bool = True,
+        filename: str = None,
+        exportObjects: bool = False,
+        saveImage: bool = True,
     ) -> bytes:
         """Export level
 
@@ -354,7 +354,10 @@ class Level(GameObject):
 
         if saveImage:
             imgFile = io.BytesIO()
-            this._image.save(imgFile, format = this.IMAGE_FORMAT)
+            this._image.save(
+                imgFile,
+                format = this.IMAGE_FORMAT,
+            )
 
             filename = os.path.splitext(filename)[0] + f'.{this.IMAGE_FORMAT.lower()}'
 
@@ -371,17 +374,17 @@ class Level(GameObject):
 
     def addObject(
         this,
-        filename : str | Object,
-        properties : dict = {},
-        pos : tuple[float,float] = (0,0),
-        name : str = 'Obj'
+        filename: str | Object,
+        properties: dict = {},
+        pos: tuple[float, float] = (0, 0),
+        name: str = 'Obj'
     ):
         """Add object to level.
 
         Args:
             filename (str | Object): Filename for object. If it's a wmwpy.classes.Object class, then it will use that instead.
             properties (dict, optional): Object properties. Defaults to {}.
-            pos (tuple[x,y], optional): Position of object in level. Defaults to (0, 0).
+            pos (tuple[x,y], optional): Position of object in level. Defaults to (0,0).
             name (str, optional): Name of object. May get renamed if object with name already exists. Defaults to 'Obj'.
 
         Returns:
@@ -394,7 +397,7 @@ class Level(GameObject):
                 properties = properties,
                 pos = pos,
                 name = name,
-                object_pack = this.object_pack
+                object_pack = this.object_pack,
             )
         else:
             filename.name = name
@@ -456,9 +459,9 @@ class Level(GameObject):
 
         def __init__(
             this,
-            xml : etree.ElementBase = None,
-            id : str = '',
-            requirements : dict[str, dict[str, str]] = {},
+            xml: etree.ElementBase = None,
+            id: str = '',
+            requirements: dict[str, dict[str, str]] = {},
         ) -> None:
             """A level challenge used in wmw2
 
@@ -525,4 +528,3 @@ class Level(GameObject):
             this.xml = root
 
             return root
-

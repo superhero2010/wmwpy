@@ -22,16 +22,15 @@ try:
             """Waltex file extension class for the `filetype` module
             """
             super(_WaltexFile, self).__init__(
-                mime=_WaltexFile.MIME,
-                extension=_WaltexFile.EXTENSION,
+                mime = _WaltexFile.MIME,
+                extension = _WaltexFile.EXTENSION,
             )
 
         def match(self, buf):
-            return (len(buf) > 3 and
-                    buf[0] == 0x57 and
-                    buf[1] == 0x41 and
-                    buf[2] == 0x4C and
-                    buf[3] == 0x54)
+            return (
+                len(buf) > 3 and buf[0] == 0x57 and buf[1] == 0x41 and buf[2] == 0x4C
+                and buf[3] == 0x54
+            )
 
     filetype.add_type(_WaltexFile())
 # filetype.guess()
@@ -89,21 +88,20 @@ Image.register_open(_WaltexImageFile.format, _WaltexImageFile, _accept)
 
 Image.register_extensions(
     _WaltexImageFile.format,
-    [
-        ".waltex"
-    ],
+    [".waltex"],
 )
 
 # main class
- 
+
+
 class Waltex():
     format = 'waltex'
     format_description = "Walaber image file"
 
     def __init__(
         this,
-        file : str | bytes,
-        byte_order : str = 'little',
+        file: str | bytes,
+        byte_order: str = 'little',
     ) -> None:
         """Waltex image
 
@@ -118,25 +116,25 @@ class Waltex():
         this._colorspecs = [
             {
                 'order': 'rgba',
-                'bpp': [8,8,8,8],
+                'bpp': [8, 8, 8, 8],
                 'spec': 'rgba8888',
                 'byte_order': 'big',
             },
             {
                 'order': 'rgb',
-                'bpp': [5,6,5],
+                'bpp': [5, 6, 5],
                 'spec': 'rgb565',
                 'byte_order': 'little',
             },
             {
                 'order': 'rgba',
-                'bpp': [5,5,5,1],
+                'bpp': [5, 5, 5, 1],
                 'spec': 'rgba5551',
                 'byte_order': 'little',
             },
             {
                 'order': 'rgba',
-                'bpp': [4,4,4,4],
+                'bpp': [4, 4, 4, 4],
                 'spec': 'rgba4444',
                 'byte_order': 'little',
             },
@@ -162,8 +160,8 @@ class Waltex():
         this.rawdata = io.BytesIO(rawdata)
 
         this.read()
-    
-    def read(this, byte_order : str = None) -> Image.Image:
+
+    def read(this, byte_order: str = None) -> Image.Image:
         """Read the waltex image.
 
         Args:
@@ -221,15 +219,15 @@ def WaltexImage(
     """
     ### Depracted
     Use `Image.load()` instead.
-
+    
     I am only keeping this just in case you need to load RGB565 (01) or RGBA5551 (02) waltex format.
-
+    
     ---
-
+    
     Get image from `waltex` file
 
     Data on image can be found in coorisponding `imagelist` or in `Data/TextureSettings.xml`.
-
+    
     Args:
         path (str): Path to `waltex` image
         premultiplyAlpha (bool, optional): Defaults to False.
@@ -269,35 +267,22 @@ def WaltexImage(
     pading = rawdata[10:16]
 
     colorspecs = [
-        {
-            'order': 'rgba',
-            'bpp': [8,8,8,8],
-            'spec': 'rgba8888'
-        },
-        {
-            'order': 'rgb',
-            'bpp': [5,6,5,0],
-            'spec': 'rgb565'
-        },
-        {
-            'order': 'rgba',
-            'bpp': [5,5,5,1],
-            'spec': 'rgba5551'
-        },
-        {
-            'order': 'rgba',
-            'bpp': [4,4,4,4],
-            'spec': 'rgba4444'
-        },
+        {'order': 'rgba', 'bpp': [8, 8, 8, 8], 'spec': 'rgba8888'},
+        {'order': 'rgb', 'bpp': [5, 6, 5, 0], 'spec': 'rgb565'},
+        {'order': 'rgba', 'bpp': [5, 5, 5, 1], 'spec': 'rgba5551'},
+        {'order': 'rgba', 'bpp': [4, 4, 4, 4], 'spec': 'rgba4444'},
     ]
 
     spec = colorspecs[format]
     colorOrder = spec['order']
     bpprgba = spec['bpp']
     bytesPerPixel = round(sum(bpprgba) / 8)
-    
-    image = WrapRawData(rawdata, w, h, bytesPerPixel, bpprgba[0], bpprgba[1], bpprgba[2], bpprgba[3], colorOrder, premultiplyAlpha, dePremultiplyAlpha, 16, endian)
-    
+
+    image = WrapRawData(
+        rawdata, w, h, bytesPerPixel, bpprgba[0], bpprgba[1], bpprgba[2], bpprgba[3],
+        colorOrder, premultiplyAlpha, dePremultiplyAlpha, 16, endian
+    )
+
     image.version = version
     image.spec = spec
 
